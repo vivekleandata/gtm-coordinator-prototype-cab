@@ -1,7 +1,8 @@
-import { Plus, Play, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { Pencil, Play, Plus, ShieldCheck } from "lucide-react";
 import { PageHeader, Section } from "@/components/ui/page-header";
 import { Card, StatusChip } from "@/components/ui/primitives";
-import { POLICIES } from "@/lib/fixtures";
+import { POLICIES, POLICY_VERSIONS } from "@/lib/fixtures";
 
 const typeLabel: Record<string, string> = {
   sequence: "Sequence",
@@ -23,107 +24,149 @@ export default function PoliciesPage() {
       <PageHeader
         eyebrow="Policies"
         title="Deterministic rules that shape every decision."
-        description="Policies compile to a fast rules engine evaluated inside the 500 ms preflight budget. Edit in plain English, simulate against real traffic, promote with one click."
+        description="Policies compile to a fast rules engine evaluated inside the 500 ms preflight budget. Author with chips, simulate against real traffic, diff vs. live, and roll back any version."
         actions={
           <>
-            <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800">
-              <Play className="w-3.5 h-3.5" /> Simulate
-            </button>
-            <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-ink-900 hover:bg-ink-800 text-[12.5px] font-medium text-white">
+            <Link
+              href="/policies/pol_ent_approval/edit"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800"
+            >
+              <Play className="w-3.5 h-3.5" /> Simulate a policy
+            </Link>
+            <Link
+              href="/policies/new"
+              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-ink-900 hover:bg-ink-800 text-[12.5px] font-medium text-white"
+            >
               <Plus className="w-3.5 h-3.5" /> New policy
-            </button>
+            </Link>
           </>
         }
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {POLICIES.map((p) => (
-          <Card key={p.id} className="p-5 space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-md bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-4 h-4 text-brand-700" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-[14.5px] font-semibold text-ink-900">
-                    {p.name}
-                  </h3>
-                  <StatusChip tone="neutral">{typeLabel[p.type]}</StatusChip>
-                  <StatusChip tone={enforcementTone[p.enforcement]}>
-                    {p.enforcement}
-                  </StatusChip>
-                  {p.status === "active" && (
-                    <StatusChip tone="green">Active</StatusChip>
-                  )}
-                  {p.status === "paused" && (
-                    <StatusChip tone="neutral">Paused</StatusChip>
-                  )}
-                  {p.status === "draft" && (
-                    <StatusChip tone="amber">Draft</StatusChip>
-                  )}
+        {POLICIES.map((p) => {
+          const versions = POLICY_VERSIONS[p.id] ?? [];
+          const headVersion = versions[0]?.version ?? 1;
+          return (
+            <Card key={p.id} className="p-5 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-md bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-4 h-4 text-brand-700" />
                 </div>
-                <p className="text-[12.5px] text-muted mt-1">{p.description}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Link
+                      href={`/policies/${p.id}/edit`}
+                      className="text-[14.5px] font-semibold text-ink-900 hover:text-brand-700"
+                    >
+                      {p.name}
+                    </Link>
+                    <StatusChip tone="neutral">{typeLabel[p.type]}</StatusChip>
+                    <StatusChip tone={enforcementTone[p.enforcement]}>
+                      {p.enforcement}
+                    </StatusChip>
+                    {p.status === "active" && (
+                      <StatusChip tone="green">Active</StatusChip>
+                    )}
+                    {p.status === "paused" && (
+                      <StatusChip tone="neutral">Paused</StatusChip>
+                    )}
+                    {p.status === "draft" && (
+                      <StatusChip tone="amber">Draft</StatusChip>
+                    )}
+                    <StatusChip tone="neutral">v{headVersion}</StatusChip>
+                  </div>
+                  <p className="text-[12.5px] text-muted mt-1">
+                    {p.description}
+                  </p>
+                </div>
+                <Link
+                  href={`/policies/${p.id}/edit`}
+                  className="shrink-0 inline-flex items-center gap-1 h-7 px-2 rounded-md border border-border bg-surface hover:bg-ink-50 text-[11.5px] font-medium text-ink-700"
+                >
+                  <Pencil className="w-3 h-3" /> Edit
+                </Link>
               </div>
-            </div>
 
-            <div className="rounded-md bg-ink-900 p-3 font-mono text-[11px] text-ink-100 leading-relaxed">
-              {p.rules.map((r, i) => (
-                <div key={i}>{r}</div>
-              ))}
-            </div>
+              <div className="rounded-md bg-ink-900 p-3 font-mono text-[11px] text-ink-100 leading-relaxed">
+                {p.rules.map((r, i) => (
+                  <div key={i}>{r}</div>
+                ))}
+              </div>
 
-            <div className="flex items-center justify-between text-[11.5px] text-muted border-t border-border pt-2">
-              <div>
-                Scope:{" "}
-                <span className="text-ink-700 font-medium">{p.scope}</span> ·
-                Applied to{" "}
-                <span className="text-ink-700 font-medium">{p.appliedTo}</span>
+              <div className="flex items-center justify-between text-[11.5px] text-muted border-t border-border pt-2">
+                <div>
+                  Scope:{" "}
+                  <span className="text-ink-700 font-medium">{p.scope}</span> ·
+                  Applied to{" "}
+                  <span className="text-ink-700 font-medium">
+                    {p.appliedTo}
+                  </span>
+                </div>
+                <div>
+                  Triggered{" "}
+                  <span className="text-ink-700 font-medium tabular">
+                    {p.triggered7d}
+                  </span>{" "}
+                  × in last 7d
+                </div>
               </div>
-              <div>
-                Triggered{" "}
-                <span className="text-ink-700 font-medium tabular">
-                  {p.triggered7d}
-                </span>{" "}
-                × in last 7d
-              </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       <Card className="p-5" emphasis>
         <Section
-          title="Dry-run simulation"
-          description="Test a policy against 7 days of real traffic before it goes live."
+          title="Why a builder, not a config file"
+          description="The Policy Builder is the same surface RevOps uses today in FlowBuilder, applied to agent guardrails. Open any policy to author with condition chips, simulate against last-7d traffic, diff against the live version, and roll back to any prior author."
         >
-          <div className="mt-3 grid grid-cols-3 gap-4 text-[12.5px]">
-            <div className="rounded-md border border-border p-3 bg-surface">
+          <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-[12.5px]">
+            <Link
+              href="/policies/pol_ent_approval/edit"
+              className="rounded-md border border-border p-3 bg-surface hover:bg-ink-50 transition-colors"
+            >
               <div className="text-[11px] uppercase text-muted font-semibold">
-                Would block
+                Author
               </div>
-              <div className="text-[20px] font-semibold text-red-700 mt-1 tabular">
-                412
+              <div className="text-[14px] font-semibold text-ink-900 mt-0.5">
+                Condition chips → live rule
               </div>
-              <div className="text-muted">vs 231 baseline — up 78%</div>
-            </div>
-            <div className="rounded-md border border-border p-3 bg-surface">
+              <div className="text-muted mt-1">
+                Pick fields, operators, values. The compiled rule updates as you
+                edit. Same engine evaluates it in production.
+              </div>
+            </Link>
+            <Link
+              href="/policies/pol_quiet_hours/edit"
+              className="rounded-md border border-border p-3 bg-surface hover:bg-ink-50 transition-colors"
+            >
               <div className="text-[11px] uppercase text-muted font-semibold">
-                Would redirect
+                Simulate
               </div>
-              <div className="text-[20px] font-semibold text-blue-700 mt-1 tabular">
-                87
+              <div className="text-[14px] font-semibold text-ink-900 mt-0.5">
+                412 decisions would flip
               </div>
-              <div className="text-muted">to owner — 12 AEs impacted</div>
-            </div>
-            <div className="rounded-md border border-border p-3 bg-surface">
+              <div className="text-muted mt-1">
+                Replays last 7 days of real preflight calls. See decisions that
+                flip, AEs and records affected, sample flips by record.
+              </div>
+            </Link>
+            <Link
+              href="/policies/pol_ent_approval/edit"
+              className="rounded-md border border-border p-3 bg-surface hover:bg-ink-50 transition-colors"
+            >
               <div className="text-[11px] uppercase text-muted font-semibold">
-                Net effect
+                Diff & rollback
               </div>
-              <div className="text-[20px] font-semibold text-emerald-700 mt-1 tabular">
-                −31%
+              <div className="text-[14px] font-semibold text-ink-900 mt-0.5">
+                4 prior versions, 1 click to restore
               </div>
-              <div className="text-muted">outbound noise on open opps</div>
-            </div>
+              <div className="text-muted mt-1">
+                Side-by-side diff vs. live. Restore any version (Mike Chen, Jen
+                Park) — restores are themselves versioned.
+              </div>
+            </Link>
           </div>
         </Section>
       </Card>

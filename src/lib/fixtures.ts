@@ -660,6 +660,462 @@ export const POLICIES: Policy[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Policy Builder — condition options, version history, simulation results
+
+export type ConditionField = {
+  id: string;
+  label: string;
+  group: "Record" | "Action" | "Requester" | "Context";
+  operators: string[];
+  values?: string[];
+};
+
+export const CONDITION_FIELDS: ConditionField[] = [
+  {
+    id: "record.tier",
+    label: "record.tier",
+    group: "Record",
+    operators: ["==", "!=", "IN"],
+    values: ["Tier 1", "Tier 2", "Tier 3", "Unranked"],
+  },
+  {
+    id: "record.lifecycle",
+    label: "record.lifecycle",
+    group: "Record",
+    operators: ["==", "!=", "IN"],
+    values: ["Lead", "MQL", "SQL", "Opportunity", "Customer", "Churned"],
+  },
+  {
+    id: "record.openOpp.stage",
+    label: "record.openOpp.stage",
+    group: "Record",
+    operators: ["==", "!=", "IN", "IS NOT NULL"],
+    values: [
+      "Discovery",
+      "Proposal",
+      "Negotiation",
+      "Closed Won",
+      "Closed Lost",
+    ],
+  },
+  {
+    id: "record.pod",
+    label: "record.pod",
+    group: "Record",
+    operators: ["==", "!=", "LIKE"],
+    values: ["AMER East", "AMER West", "EMEA North", "EMEA South", "APAC"],
+  },
+  {
+    id: "record.activeSequence",
+    label: "record.activeSequence",
+    group: "Record",
+    operators: ["IS NULL", "IS NOT NULL"],
+  },
+  {
+    id: "action.category",
+    label: "action.category",
+    group: "Action",
+    operators: ["==", "!=", "IN"],
+    values: ["outbound", "research", "scheduling", "enrichment", "internal"],
+  },
+  {
+    id: "action.channel",
+    label: "action.channel",
+    group: "Action",
+    operators: ["==", "!=", "IN"],
+    values: ["email", "linkedin", "phone", "sms", "in-app"],
+  },
+  {
+    id: "action.type",
+    label: "action.type",
+    group: "Action",
+    operators: ["==", "!="],
+    values: [
+      "send_email",
+      "add_to_sequence",
+      "schedule_meeting",
+      "post_comment",
+      "enrich_contact",
+    ],
+  },
+  {
+    id: "requester.kind",
+    label: "requester.kind",
+    group: "Requester",
+    operators: ["==", "!=", "IN"],
+    values: [
+      "ai-sdr",
+      "intent",
+      "scheduling",
+      "enrichment",
+      "research",
+      "internal",
+    ],
+  },
+  {
+    id: "local_time",
+    label: "local_time",
+    group: "Context",
+    operators: ["IN", "NOT IN"],
+    values: ["08:00–18:00", "18:00–08:00", "09:00–17:00 weekdays"],
+  },
+];
+
+export type ScopeFacet = {
+  key: "tier" | "lifecycle" | "pod" | "vertical";
+  label: string;
+  options: string[];
+};
+
+export const SCOPE_FACETS: ScopeFacet[] = [
+  {
+    key: "tier",
+    label: "Tier",
+    options: ["Tier 1", "Tier 2", "Tier 3", "Unranked"],
+  },
+  {
+    key: "lifecycle",
+    label: "Lifecycle",
+    options: ["Lead", "MQL", "SQL", "Opportunity", "Customer", "Churned"],
+  },
+  {
+    key: "pod",
+    label: "Pod / Region",
+    options: ["AMER East", "AMER West", "EMEA North", "EMEA South", "APAC"],
+  },
+  {
+    key: "vertical",
+    label: "Vertical",
+    options: ["FinServ", "Healthcare", "Tech", "Retail", "Manufacturing"],
+  },
+];
+
+export type PolicyVersion = {
+  version: number;
+  timestamp: string;
+  author: string;
+  authorRole: string;
+  summary: string;
+  rules: string[];
+};
+
+export const POLICY_VERSIONS: { [policyId: string]: PolicyVersion[] } = {
+  pol_ent_approval: [
+    {
+      version: 4,
+      timestamp: "2026-04-18 14:22 PT",
+      author: "Mike Chen",
+      authorRole: "RevOps Mgr",
+      summary: "Tightened to Negotiation + Proposal only (was: any open opp).",
+      rules: [
+        "IF record.tier == 'Tier 1' AND record.openOpp.stage IN ('Negotiation','Proposal')",
+        "AND action.category == 'outbound'",
+        "THEN decision = REDIRECT to owner (Slack DM + dashboard review)",
+      ],
+    },
+    {
+      version: 3,
+      timestamp: "2026-03-09 10:11 PT",
+      author: "Mike Chen",
+      authorRole: "RevOps Mgr",
+      summary: "Added dashboard-review side-effect to redirect.",
+      rules: [
+        "IF record.tier == 'Tier 1' AND record.openOpp.stage IS NOT NULL",
+        "AND action.category == 'outbound'",
+        "THEN decision = REDIRECT to owner (Slack DM + dashboard review)",
+      ],
+    },
+    {
+      version: 2,
+      timestamp: "2026-02-14 09:45 PT",
+      author: "Jen Park",
+      authorRole: "VP RevOps",
+      summary: "Switched enforcement from BLOCK to REDIRECT.",
+      rules: [
+        "IF record.tier == 'Tier 1' AND record.openOpp.stage IS NOT NULL",
+        "AND action.category == 'outbound'",
+        "THEN decision = REDIRECT to owner",
+      ],
+    },
+    {
+      version: 1,
+      timestamp: "2026-01-22 16:08 PT",
+      author: "Jen Park",
+      authorRole: "VP RevOps",
+      summary: "Initial enterprise approval gate.",
+      rules: [
+        "IF record.tier == 'Tier 1' AND record.openOpp.stage IS NOT NULL",
+        "AND action.category == 'outbound'",
+        "THEN decision = NO_GO",
+      ],
+    },
+  ],
+  pol_quiet_hours: [
+    {
+      version: 3,
+      timestamp: "2026-03-22 11:02 PT",
+      author: "Mike Chen",
+      authorRole: "RevOps Mgr",
+      summary: "Narrowed window to local 08:00–18:00 (was: 09:00–17:00).",
+      rules: [
+        "IF record.pod LIKE 'EMEA%' AND local_time NOT IN (08:00–18:00)",
+        "THEN decision = WAIT until next business hour",
+      ],
+    },
+    {
+      version: 2,
+      timestamp: "2026-02-01 13:30 PT",
+      author: "Jen Park",
+      authorRole: "VP RevOps",
+      summary: "Switched WAIT to honor next-business-hour vs. drop.",
+      rules: [
+        "IF record.pod LIKE 'EMEA%' AND local_time NOT IN (09:00–17:00)",
+        "THEN decision = WAIT until next business hour",
+      ],
+    },
+    {
+      version: 1,
+      timestamp: "2026-01-12 08:14 PT",
+      author: "Jen Park",
+      authorRole: "VP RevOps",
+      summary: "Initial EMEA quiet hours.",
+      rules: [
+        "IF record.pod LIKE 'EMEA%' AND local_time NOT IN (09:00–17:00)",
+        "THEN decision = NO_GO",
+      ],
+    },
+  ],
+  pol_sequence_order: [
+    {
+      version: 2,
+      timestamp: "2026-02-09 15:50 PT",
+      author: "Mike Chen",
+      authorRole: "RevOps Mgr",
+      summary: "Added cross-agent guard.",
+      rules: [
+        "IF record.activeSequence IS NOT NULL AND action.type == 'add_to_sequence'",
+        "AND requester.agentId != record.activeSequence.agentId",
+        "THEN decision = NO_GO",
+      ],
+    },
+    {
+      version: 1,
+      timestamp: "2026-01-08 09:00 PT",
+      author: "Jen Park",
+      authorRole: "VP RevOps",
+      summary: "Initial single-sequence lock.",
+      rules: [
+        "IF record.activeSequence IS NOT NULL AND action.type == 'add_to_sequence'",
+        "THEN decision = NO_GO",
+      ],
+    },
+  ],
+  pol_channel_priority: [
+    {
+      version: 1,
+      timestamp: "2026-04-02 10:18 PT",
+      author: "Mike Chen",
+      authorRole: "RevOps Mgr",
+      summary: "Initial CSM channel priority.",
+      rules: [
+        "IF record.lifecycle == 'Customer' AND action.channel == 'email'",
+        "AND requester.kind IN ('ai-sdr','intent')",
+        "THEN decision = REDIRECT to CSM",
+      ],
+    },
+  ],
+  pol_meeting_exclusive: [
+    {
+      version: 1,
+      timestamp: "2026-01-11 14:00 PT",
+      author: "Jen Park",
+      authorRole: "VP RevOps",
+      summary: "Initial booking-lock exclusivity.",
+      rules: [
+        "IF action.type == 'schedule_meeting' AND booking_lock_exists(record.id, ttl=240s)",
+        "AND requester.agentId != lock.holder",
+        "THEN decision = WAIT",
+      ],
+    },
+  ],
+};
+
+export type SimulationResult = {
+  windowDays: number;
+  evaluated: number;
+  flips: number;
+  aesAffected: number;
+  recordsAffected: number;
+  before: { GO: number; NO_GO: number; WAIT: number; REDIRECT: number };
+  after: { GO: number; NO_GO: number; WAIT: number; REDIRECT: number };
+  sampleFlips: Array<{
+    record: string;
+    owner: string;
+    agent: string;
+    from: "GO" | "NO_GO" | "WAIT" | "REDIRECT";
+    to: "GO" | "NO_GO" | "WAIT" | "REDIRECT";
+    reason: string;
+  }>;
+};
+
+export const SIMULATION_RESULTS: { [policyId: string]: SimulationResult } = {
+  pol_ent_approval: {
+    windowDays: 7,
+    evaluated: 18_412,
+    flips: 87,
+    aesAffected: 12,
+    recordsAffected: 64,
+    before: { GO: 14_910, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 474 },
+    after: { GO: 14_823, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 561 },
+    sampleFlips: [
+      {
+        record: "Convex · Acme Industries",
+        owner: "Mike Chen",
+        agent: "Warmly",
+        from: "GO",
+        to: "REDIRECT",
+        reason: "Tier 1 + Negotiation stage → owner DM",
+      },
+      {
+        record: "Convex · Helix Bio",
+        owner: "Priya Shah",
+        agent: "11x · Alice",
+        from: "GO",
+        to: "REDIRECT",
+        reason: "Tier 1 + Proposal stage → owner DM",
+      },
+      {
+        record: "Convex · Northwind Trading",
+        owner: "Diego Alvarez",
+        agent: "Regie.ai",
+        from: "GO",
+        to: "REDIRECT",
+        reason: "Tier 1 + Negotiation stage → owner DM",
+      },
+      {
+        record: "Convex · Globex Corp",
+        owner: "Mike Chen",
+        agent: "Clay",
+        from: "GO",
+        to: "REDIRECT",
+        reason: "Tier 1 + Proposal stage → owner DM",
+      },
+      {
+        record: "Convex · Stark Holdings",
+        owner: "Sarah Lee",
+        agent: "OneMind",
+        from: "GO",
+        to: "REDIRECT",
+        reason: "Tier 1 + Negotiation stage → owner DM",
+      },
+    ],
+  },
+  pol_quiet_hours: {
+    windowDays: 7,
+    evaluated: 18_412,
+    flips: 412,
+    aesAffected: 28,
+    recordsAffected: 318,
+    before: { GO: 15_322, NO_GO: 1_428, WAIT: 1_188, REDIRECT: 474 },
+    after: { GO: 14_910, NO_GO: 1_428, WAIT: 1_600, REDIRECT: 474 },
+    sampleFlips: [
+      {
+        record: "Convex · Banque Lyon",
+        owner: "Camille Rousseau",
+        agent: "11x · Alice",
+        from: "GO",
+        to: "WAIT",
+        reason: "EMEA + 21:14 local → next business hour",
+      },
+      {
+        record: "Convex · Siemens Health",
+        owner: "Anders Vogel",
+        agent: "Regie.ai",
+        from: "GO",
+        to: "WAIT",
+        reason: "EMEA + 22:30 local → next business hour",
+      },
+      {
+        record: "Convex · Holberton SAS",
+        owner: "Camille Rousseau",
+        agent: "Warmly",
+        from: "GO",
+        to: "WAIT",
+        reason: "EMEA + 19:42 local → next business hour",
+      },
+    ],
+  },
+  pol_sequence_order: {
+    windowDays: 7,
+    evaluated: 18_412,
+    flips: 238,
+    aesAffected: 34,
+    recordsAffected: 184,
+    before: { GO: 15_148, NO_GO: 1_602, WAIT: 1_188, REDIRECT: 474 },
+    after: { GO: 14_910, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 474 },
+    sampleFlips: [
+      {
+        record: "Convex · Acme Industries",
+        owner: "Mike Chen",
+        agent: "Regie.ai",
+        from: "GO",
+        to: "NO_GO",
+        reason: "11x already owns active sequence",
+      },
+    ],
+  },
+  pol_channel_priority: {
+    windowDays: 7,
+    evaluated: 18_412,
+    flips: 61,
+    aesAffected: 8,
+    recordsAffected: 47,
+    before: { GO: 14_971, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 413 },
+    after: { GO: 14_910, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 474 },
+    sampleFlips: [
+      {
+        record: "Convex · Wayne Enterprises",
+        owner: "Sasha Patel · CSM",
+        agent: "11x · Alice",
+        from: "GO",
+        to: "REDIRECT",
+        reason: "Customer lifecycle + email → CSM owns thread",
+      },
+    ],
+  },
+  pol_meeting_exclusive: {
+    windowDays: 7,
+    evaluated: 18_412,
+    flips: 44,
+    aesAffected: 11,
+    recordsAffected: 38,
+    before: { GO: 14_954, NO_GO: 1_840, WAIT: 1_144, REDIRECT: 474 },
+    after: { GO: 14_910, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 474 },
+    sampleFlips: [
+      {
+        record: "Convex · Helix Bio",
+        owner: "Priya Shah",
+        agent: "OneMind",
+        from: "GO",
+        to: "WAIT",
+        reason: "Booking lock held by Qualified (180s remaining)",
+      },
+    ],
+  },
+};
+
+export const NEW_POLICY_SIMULATION: SimulationResult = {
+  windowDays: 7,
+  evaluated: 18_412,
+  flips: 0,
+  aesAffected: 0,
+  recordsAffected: 0,
+  before: { GO: 14_910, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 474 },
+  after: { GO: 14_910, NO_GO: 1_840, WAIT: 1_188, REDIRECT: 474 },
+  sampleFlips: [],
+};
+
+// ---------------------------------------------------------------------------
 // Communication Budgets
 
 export type BudgetTier = {
