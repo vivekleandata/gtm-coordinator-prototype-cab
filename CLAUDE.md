@@ -70,7 +70,7 @@ This project mirrors the agentic-gtm-platform handoff cadence so you can iterate
 - **Start of session:** run `/resume-session` to read the latest handoff in `docs/handoffs/` and propose next steps.
 - **End of session:** run `/save-session` to write a dated handoff (`docs/handoffs/YYYY-MM-DD-session-handoff.md`).
 - **Same-day revisions:** the slash commands auto-suffix `-v2`, `-v3`, etc.
-- **Notion:** intentionally NOT wired up by default. The AGP Notion workspace is scoped to that project; if you want a parallel one for gtm-coordinator, set up a dedicated Session Log DB and tell next-session Claude the data_source_id.
+- **Notion patch log (CPO-facing):** every meaningful prototype change must be appended as a row in the **Patch Log** database under [GTM Controller Prototype - Changelog](https://www.notion.so/34f2127cacac80fa968ceecef99771af). Use `notion-create-pages` with `parent: { data_source_id: "403c7124-3696-4555-9913-674545bc3124" }`. Map each row to a buyer-review item from `prototype-buyer-review.md` and the persona(s) it unlocks. Page body: What changed · Why this matters · Demo path · Verification. Skip for cosmetic changes only.
 
 Project-scoped command definitions live in `.claude/commands/save-session.md` and `.claude/commands/resume-session.md`.
 

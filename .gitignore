@@ -41,3 +41,7 @@ next-env.d.ts
 
 # claude
 .claude/settings.local.json
+
+# verification artifacts (screenshots, playwright traces)
+.playwright-mcp/
+/*.png
