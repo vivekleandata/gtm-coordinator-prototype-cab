@@ -1882,6 +1882,239 @@ export const MCP_TOOLS = [
 ];
 
 // ---------------------------------------------------------------------------
+// Owner Slack DMs — what the AE sees when Coordinator holds an agent action.
+// Buyer-review patch #1 (Tier-1): "Rep-view card on /records/[id]"
+//
+// Each message corresponds to a decision the Coordinator made on the rep's
+// behalf. Coordinator only ever DMs the owner when an *agent* action is held,
+// redirected, or waited — rep-initiated actions are never gated. The DM is
+// framed as protection ("I held it — your move"), not surveillance.
+//
+// The Slack mock renders these as Block-Kit-style cards with action buttons.
+
+export type OwnerSlackAction =
+  | "approve"
+  | "hold"
+  | "handoff"
+  | "view-record"
+  | "snooze";
+
+export type OwnerSlackMessage = {
+  id: string;
+  decisionId: string; // ties back to PreflightEntry.id
+  recordId: string;
+  agentId: string;
+  decision: Decision;
+  channel: string; // attempted channel: email / chat / linkedin / meeting
+  policyId: string; // policy that fired
+  policyLabel: string; // human-readable policy name
+  secondsAgo: number; // for relative timestamp
+  absoluteTime: string; // "Today at 2:18 PM"
+  headline: string; // bold first line, plain-language framing
+  body: string; // 1-2 sentence context
+  context?: string; // optional inline italic context (e.g. agent's draft preview)
+  actions: OwnerSlackAction[];
+  unread?: boolean;
+  resolved?: "approved" | "held" | "handed-off"; // if rep already acted
+};
+
+export const OWNER_SLACK_MESSAGES_BY_RECORD: {
+  [recordId: string]: OwnerSlackMessage[];
+} = {
+  rec_jane_bigcorp: [
+    {
+      id: "msg_jane_01",
+      decisionId: "req_2H98",
+      recordId: "rec_jane_bigcorp",
+      agentId: "agt_warmly_visitor",
+      decision: "REDIRECT",
+      channel: "chat",
+      policyId: "pol_ent_approval",
+      policyLabel: "Enterprise Approval Gate",
+      secondsAgo: 172,
+      absoluteTime: "Today at 2:18 PM",
+      headline: "Warmly wanted to chat Jane Doe. I held it — your move.",
+      body: "Open opp in Negotiation ($180K) — auto-chat would have stepped on your thread. Approve to let it run, hand off to me to take it directly, or hold and Warmly will defer for 24h.",
+      context:
+        'Warmly draft: "Hey Jane — saw you back on the pricing page. Want me to grab a slot with Mike?"',
+      actions: ["approve", "handoff", "hold"],
+      unread: true,
+    },
+    {
+      id: "msg_jane_02",
+      decisionId: "req_jane_regie",
+      recordId: "rec_jane_bigcorp",
+      agentId: "agt_regie_ai",
+      decision: "NO_GO",
+      channel: "email",
+      policyId: "pol_sequence_order",
+      policyLabel: "Single-Sequence Lock",
+      secondsAgo: 1320,
+      absoluteTime: "Today at 1:54 PM",
+      headline: "Regie.ai tried to start a 6-step outbound. I blocked it.",
+      body: "11x Alice already owns the active sequence on Jane. I dropped Regie's send so Jane doesn't get two parallel cadences. No action needed — flagging so you know.",
+      actions: ["view-record", "snooze"],
+      resolved: "held",
+    },
+    {
+      id: "msg_jane_03",
+      decisionId: "req_2H9E",
+      recordId: "rec_jane_bigcorp",
+      agentId: "agt_11x_alice",
+      decision: "WAIT",
+      channel: "email",
+      policyId: "pol_ent_approval",
+      policyLabel: "Cooldown · 15 min",
+      secondsAgo: 2400,
+      absoluteTime: "Today at 1:38 PM",
+      headline: "11x Alice paused — you touched Jane 11 minutes ago.",
+      body: "Holding her email until 2:28 PM so the cadence doesn't double-up on yours. Approve to send now, or let it auto-release.",
+      actions: ["approve", "hold"],
+      unread: false,
+    },
+    {
+      id: "msg_jane_04",
+      decisionId: "req_jane_onemind_dbl",
+      recordId: "rec_jane_bigcorp",
+      agentId: "agt_onemind_sched",
+      decision: "WAIT",
+      channel: "meeting",
+      policyId: "pol_meeting_exclusive",
+      policyLabel: "Meeting Booking Exclusivity",
+      secondsAgo: 5400,
+      absoluteTime: "Today at 12:48 PM",
+      headline: "OneMind almost double-booked Jane. Booking lock held it.",
+      body: "Qualified Piper had a 4-min booking lock active when OneMind tried to schedule. OneMind is queued — if Piper drops the lock, OneMind picks it up.",
+      actions: ["view-record"],
+      resolved: "held",
+    },
+    {
+      id: "msg_jane_05",
+      decisionId: "req_jane_clay",
+      recordId: "rec_jane_bigcorp",
+      agentId: "agt_clay_enrich",
+      decision: "REDIRECT",
+      channel: "linkedin",
+      policyId: "pol_channel_priority",
+      policyLabel: "Channel Priority — AE owns Tier-1",
+      secondsAgo: 9700,
+      absoluteTime: "Today at 11:36 AM",
+      headline: "Clay tried to LinkedIn-DM Jane. Routed to you instead.",
+      body: "Tier-1 + open opp — agent LinkedIn DMs go through the owner. I drafted a handoff in your inbox. Send as-is or edit.",
+      actions: ["handoff", "hold"],
+      resolved: "approved",
+    },
+  ],
+  rec_mike_company: [
+    {
+      id: "msg_mike_01",
+      decisionId: "req_2H9B",
+      recordId: "rec_mike_company",
+      agentId: "agt_11x_alice",
+      decision: "WAIT",
+      channel: "meeting",
+      policyId: "pol_meeting_exclusive",
+      policyLabel: "Meeting Booking Exclusivity",
+      secondsAgo: 63,
+      absoluteTime: "Today at 2:20 PM",
+      headline: "11x Alice tried to schedule with Mike — OneMind has the lock.",
+      body: "OneMind is mid-booking flow with the round-robin pool (TTL 4m). Holding 11x until OneMind drops the lock or it expires.",
+      actions: ["view-record"],
+      unread: true,
+    },
+    {
+      id: "msg_mike_02",
+      decisionId: "req_2H91",
+      recordId: "rec_mike_company",
+      agentId: "agt_warmly_visitor",
+      decision: "NO_GO",
+      channel: "email",
+      policyId: "pol_ent_approval",
+      policyLabel: "Tier-1 Outbound Authorization",
+      secondsAgo: 540,
+      absoluteTime: "Today at 2:11 PM",
+      headline: "Warmly is not authorized to email Tier-1 accounts.",
+      body: "Blocked at the gate — Warmly's declared actions don't include email on Tier-1 records. No action needed.",
+      actions: ["view-record"],
+      resolved: "held",
+    },
+  ],
+  rec_emma_tech: [
+    {
+      id: "msg_emma_01",
+      decisionId: "req_2H93",
+      recordId: "rec_emma_tech",
+      agentId: "agt_rev_outbound",
+      decision: "REDIRECT",
+      channel: "email",
+      policyId: "pol_sequence_order",
+      policyLabel: "Single-Sequence Lock",
+      secondsAgo: 422,
+      absoluteTime: "Today at 2:13 PM",
+      headline: "Convex Outbound wanted to add Emma to a new nurture.",
+      body: "She's already in nurture-q2-emea. Sent it to Priya for review instead of dropping it on the floor.",
+      actions: ["view-record", "handoff"],
+      unread: true,
+    },
+  ],
+  rec_john_startup: [
+    {
+      id: "msg_john_01",
+      decisionId: "req_2H9D",
+      recordId: "rec_john_startup",
+      agentId: "agt_warmly_visitor",
+      decision: "NO_GO",
+      channel: "chat",
+      policyId: "pol_chan_cap",
+      policyLabel: "Channel cap · 9/9 weekly",
+      secondsAgo: 28,
+      absoluteTime: "Today at 2:21 PM",
+      headline: "Warmly hit the weekly touch budget on John (9/9).",
+      body: "Holding all outbound until next Monday. Override if you have new context — otherwise we'll let the cooldown ride.",
+      actions: ["approve", "hold"],
+      unread: true,
+    },
+  ],
+  // rec_sarah_ent and rec_lena_atlas intentionally omitted — render as
+  // "quiet week, nothing held" empty state to show breadth.
+};
+
+// Per-decision rep-impact framing — flips the timeline copy from
+// agent-centric ("Warmly REDIRECTed") to owner-centric ("Held on Mike's
+// behalf"). Only attached to decisions that affect the rep's surface.
+export const REP_IMPACT_BY_DECISION: { [decisionId: string]: string } = {
+  req_2H9E: "Held on Mike's behalf — your last touch was 11 min ago.",
+  req_2H98: "Routed to Mike — auto-chat held while owner chooses.",
+  req_2H95: "Silent enrichment — never reaches Mike's inbox.",
+  req_2H9B: "Held on James's behalf — booking lock protects the slot.",
+  req_2H9A: "Booked into James's pool — round-robin honored.",
+  req_2H93: "Routed to Priya for review — protects existing nurture.",
+  req_2H92: "Mike notified — buying-group signal, no auto-touch.",
+  req_2H91: "Blocked at the gate — Warmly cannot email Tier-1.",
+  req_2H9D: "Held on Sarah Johnson's behalf — weekly cap reached.",
+  req_2H97: "Held — Regie running 59% NO_GO, throttled by the gate.",
+  req_2H96: "Allowed — first touch this channel, within budget.",
+  req_2H94: "Held on James's behalf — meeting pending, 24h quiet.",
+  req_2H99: "Priya notified — intent signal, owner gets first look.",
+  req_2H9F: "Allowed — internal CSM action on a customer record.",
+  req_2H9C: "Silent enrichment — never reaches Tom's inbox.",
+};
+
+// ---------------------------------------------------------------------------
+// AE-protection guarantee — the political insurance line.
+// Surfaced as a persistent pill on /records/[id] in both views.
+export const REP_GUARANTEE = {
+  short: "AE actions are never blocked.",
+  long: "Coordinator only governs agent traffic. Anything you initiate from Salesforce, your inbox, LinkedIn, or your sequencer always returns GO at the gate. Preflight cannot fire NO_GO on a rep-initiated action — that path is short-circuited at the policy layer.",
+  policyId: "pol_rep_passthrough",
+  policyLabel: "Rep Passthrough · pol_rep_passthrough",
+  ruleSnippet: [
+    "IF requester.kind == 'human' AND requester.userId == record.ownerId",
+    "THEN decision = GO  // bypass all policy gates",
+  ],
+};
+
+// ---------------------------------------------------------------------------
 // Lookups
 
 export const AGENTS_BY_ID = Object.fromEntries(AGENTS.map((a) => [a.id, a]));
