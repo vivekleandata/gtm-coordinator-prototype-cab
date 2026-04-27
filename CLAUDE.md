@@ -49,6 +49,13 @@ npx tsc --noEmit
 npm run build
 ```
 
+## Deploy
+
+Production lives at `gtm-coordinator.vercel.app`. The Vercel project is linked to
+`github.com/vivekleandata/gtm-coordinator-prototype-cab` — pushes to `main`
+auto-deploy to production, branches get preview URLs, PRs get preview comments.
+No manual `vercel deploy` needed.
+
 ## Fixtures
 
 Tenant: Convex Software (same fictional tenant as agp-app-v7).
