@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fafbfc;
+  --surface: #ffffff;
+  --foreground: #0f1419;
+  --muted: #6b7280;
+  --border: #e6e8eb;
+  --brand: #4a4bd6;
+  --brand-strong: #3e3cb8;
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow:
+    0 1px 0 rgba(15, 20, 25, 0.02),
+    0 1px 2px rgba(15, 20, 25, 0.04);
+}
+
+.product-card-hover {
+  transition: all 160ms ease;
+}
+.product-card-hover:hover {
+  border-color: #d1d5db;
+  box-shadow:
+    0 1px 0 rgba(15, 20, 25, 0.02),
+    0 4px 12px -2px rgba(15, 20, 25, 0.06);
+}
+
+.emphasis-card {
+  background: rgba(74, 75, 214, 0.04);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--brand);
+  box-shadow:
+    0 1px 0 rgba(15, 20, 25, 0.02),
+    0 1px 2px rgba(15, 20, 25, 0.04);
+  border-radius: 10px;
+}
+
+.mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabular,
+.stat,
+.display {
+  font-variant-numeric: tabular-nums;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid transparent;
+}
+
+.tool-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.shimmer-bg {
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hero-serif {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(74, 75, 214, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 75, 214, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* live dot pulse */
+@keyframes livePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0);
+  }
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #16a34a;
+  animation: livePulse 1.6s ease-out infinite;
+  display: inline-block;
+}
+
+/* tiny sparkline bars baseline */
+.spark-bar {
+  background: currentColor;
+  border-radius: 1.5px;
+}
