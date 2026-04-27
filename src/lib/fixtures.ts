@@ -1310,11 +1310,16 @@ export const MEETINGS: Meeting[] = [
 // ---------------------------------------------------------------------------
 // Attribution
 
+export type AttributionMethod = "first-touch" | "linear" | "shapley";
+
 export type AgentAttribution = {
   agentId: string;
   meetings: number;
-  pipeline: string;
-  revenue: string;
+  // Per-method dollar splits (in thousands of dollars, demo numbers).
+  // First-touch concentrates credit on early-funnel agents.
+  // Shapley spreads it more evenly. Linear sits between.
+  pipelineByMethod: { [K in AttributionMethod]: number };
+  revenueByMethod: { [K in AttributionMethod]: number };
   winRate: number;
   avgCycleDays: number;
 };
@@ -1323,42 +1328,358 @@ export const ATTRIBUTION: AgentAttribution[] = [
   {
     agentId: "agt_11x_alice",
     meetings: 68,
-    pipeline: "$2.1M",
-    revenue: "$420K",
+    pipelineByMethod: {
+      "first-touch": 2680, // $2.68M — outbound = first-touch heavy
+      linear: 2100,
+      shapley: 1820,
+    },
+    revenueByMethod: {
+      "first-touch": 540,
+      linear: 420,
+      shapley: 360,
+    },
     winRate: 0.31,
     avgCycleDays: 42,
   },
   {
     agentId: "agt_onemind_sched",
     meetings: 34,
-    pipeline: "$980K",
-    revenue: "$210K",
+    pipelineByMethod: {
+      "first-touch": 410, // schedulers rarely first-touch
+      linear: 980,
+      shapley: 1240,
+    },
+    revenueByMethod: {
+      "first-touch": 90,
+      linear: 210,
+      shapley: 280,
+    },
     winRate: 0.29,
     avgCycleDays: 38,
   },
   {
     agentId: "agt_warmly_visitor",
     meetings: 21,
-    pipeline: "$640K",
-    revenue: "$120K",
+    pipelineByMethod: {
+      "first-touch": 820, // visitor intent often surfaces first
+      linear: 640,
+      shapley: 540,
+    },
+    revenueByMethod: {
+      "first-touch": 160,
+      linear: 120,
+      shapley: 100,
+    },
     winRate: 0.26,
     avgCycleDays: 51,
   },
   {
     agentId: "agt_rev_outbound",
     meetings: 14,
-    pipeline: "$380K",
-    revenue: "$90K",
+    pipelineByMethod: {
+      "first-touch": 240,
+      linear: 380,
+      shapley: 460,
+    },
+    revenueByMethod: {
+      "first-touch": 60,
+      linear: 90,
+      shapley: 110,
+    },
     winRate: 0.33,
     avgCycleDays: 36,
   },
   {
-    agentId: "agt_zi_signals",
-    meetings: 5,
-    pipeline: "$110K",
-    revenue: "$0",
+    agentId: "agt_clay_enrich",
+    meetings: 0,
+    pipelineByMethod: {
+      "first-touch": 0, // enrichment is never first or last touch
+      linear: 70,
+      shapley: 180,
+    },
+    revenueByMethod: {
+      "first-touch": 0,
+      linear: 18,
+      shapley: 48,
+    },
     winRate: 0.0,
     avgCycleDays: 0,
+  },
+  {
+    agentId: "agt_zi_signals",
+    meetings: 5,
+    pipelineByMethod: {
+      "first-touch": 50,
+      linear: 110,
+      shapley: 160,
+    },
+    revenueByMethod: {
+      "first-touch": 0,
+      linear: 0,
+      shapley: 12,
+    },
+    winRate: 0.0,
+    avgCycleDays: 0,
+  },
+];
+
+// Counterfactual / methodology — three pre-computed worlds.
+// "Matched-holdout" baseline is a CUPED-style synthetic control built from
+// pre-period account features (firmographic, intent, prior-quarter pipeline).
+// All numbers are demo-only.
+export type AttributionCounterfactual = {
+  attributedPipelineK: number; // sum across agents
+  baselinePipelineK: number; // matched-holdout estimate
+  liftK: number;
+  liftPct: number;
+  pValue: string; // formatted "p<0.05" / "p<0.01"
+  confidenceLow: number; // K
+  confidenceHigh: number; // K
+  attributedRevenueK: number;
+  baselineRevenueK: number;
+  blendedWinRate: number;
+  baselineWinRate: number;
+  cycleDays: number;
+  baselineCycleDays: number;
+};
+
+export const ATTRIBUTION_COUNTERFACTUAL: {
+  [K in AttributionMethod]: AttributionCounterfactual;
+} = {
+  "first-touch": {
+    attributedPipelineK: 4200,
+    baselinePipelineK: 3140,
+    liftK: 1060,
+    liftPct: 0.337,
+    pValue: "p<0.05",
+    confidenceLow: 720,
+    confidenceHigh: 1400,
+    attributedRevenueK: 850,
+    baselineRevenueK: 640,
+    blendedWinRate: 0.28,
+    baselineWinRate: 0.24,
+    cycleDays: 42,
+    baselineCycleDays: 53,
+  },
+  linear: {
+    attributedPipelineK: 4280,
+    baselinePipelineK: 2940,
+    liftK: 1340,
+    liftPct: 0.456,
+    pValue: "p<0.01",
+    confidenceLow: 970,
+    confidenceHigh: 1710,
+    attributedRevenueK: 858,
+    baselineRevenueK: 612,
+    blendedWinRate: 0.28,
+    baselineWinRate: 0.24,
+    cycleDays: 42,
+    baselineCycleDays: 53,
+  },
+  shapley: {
+    attributedPipelineK: 4400,
+    baselinePipelineK: 2900,
+    liftK: 1500,
+    liftPct: 0.517,
+    pValue: "p<0.01",
+    confidenceLow: 1110,
+    confidenceHigh: 1890,
+    attributedRevenueK: 880,
+    baselineRevenueK: 600,
+    blendedWinRate: 0.28,
+    baselineWinRate: 0.24,
+    cycleDays: 42,
+    baselineCycleDays: 53,
+  },
+};
+
+export const ATTRIBUTION_STUDY = {
+  windowDays: 90,
+  treatedAccounts: 318,
+  controlAccounts: 318,
+  matchedFeatures: [
+    "industry",
+    "employee band",
+    "ARR band",
+    "tier",
+    "prior-quarter pipeline",
+    "intent decile",
+  ],
+  cohortStart: "2026-01-26",
+  cohortEnd: "2026-04-25",
+  controlSource: "Pre-Coordinator pods (US-East, EMEA-South) + holdout 10%",
+  refreshedAt: "2026-04-26 06:00 UTC",
+  inheritedFromAgp: "agp-app-v7 / experiment exp_coord_holdout_v3",
+};
+
+export const METHODOLOGY_NOTES: {
+  [K in AttributionMethod]: {
+    label: string;
+    oneLiner: string;
+    details: string;
+  };
+} = {
+  "first-touch": {
+    label: "First-touch",
+    oneLiner: "100% credit to the first agent that surfaces the account.",
+    details:
+      "Concentrates credit on early-funnel agents (11x, Warmly). Strong for pipeline-creation accountability, weak for closing motion. Inherited from the legacy MarTech model — included for reconciliation with Marketing Ops.",
+  },
+  linear: {
+    label: "Linear",
+    oneLiner: "Equal credit across every agent that touched the account.",
+    details:
+      "Each agent on the path gets 1/n. Simple, defensible, neutral across funnel stage. Best when you want the table to read as 'which agents are on the winning paths' without weighting.",
+  },
+  shapley: {
+    label: "Shapley (multi-touch)",
+    oneLiner:
+      "Game-theoretic credit based on each agent's marginal contribution.",
+    details:
+      "Computes the average marginal lift each agent adds across all permutations of touch sequences, against the matched-holdout baseline. Spreads credit toward agents that actually move conversion — schedulers, enrichment — that linear and first-touch under-report. Default for the board deck.",
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Avoided-cost (collisions translated to pipeline protected)
+
+export type AvoidedCostBreakdown = {
+  collisionsBlocked: number;
+  duplicateTouchesBlocked: number;
+  prospectsRetained: number; // would-have-churned-from-fatigue
+  pipelineProtectedK: number;
+  revenueProtectedK: number;
+  byPolicy: Array<{
+    policyId: string;
+    label: string;
+    blocked: number;
+    protectedK: number;
+  }>;
+};
+
+export const AVOIDED_COST: AvoidedCostBreakdown = {
+  collisionsBlocked: 142,
+  duplicateTouchesBlocked: 487,
+  prospectsRetained: 64,
+  pipelineProtectedK: 680,
+  revenueProtectedK: 142,
+  byPolicy: [
+    {
+      policyId: "pol_ent_approval",
+      label: "Tier-1 approval",
+      blocked: 38,
+      protectedK: 240,
+    },
+    {
+      policyId: "pol_quiet_hours",
+      label: "EMEA quiet hours",
+      blocked: 41,
+      protectedK: 110,
+    },
+    {
+      policyId: "pol_seq_dedupe",
+      label: "Sequence dedupe",
+      blocked: 51,
+      protectedK: 220,
+    },
+    {
+      policyId: "pol_chan_cap",
+      label: "Channel caps",
+      blocked: 12,
+      protectedK: 110,
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Meeting quality — agent-booked vs AE-booked
+// CRO board-deck ask: are agent-booked meetings the same quality as AE-booked?
+
+export type MeetingQualityRow = {
+  bookedBy: "Agent" | "AE";
+  meetings: number;
+  showRate: number;
+  saoRate: number; // SAO conversion (sales accepted opportunity)
+  stage2Rate: number; // % that reach stage-2 (Discovery → Proposal)
+  closedWonRate: number;
+  avgDealSizeK: number;
+};
+
+export const MEETING_QUALITY: MeetingQualityRow[] = [
+  {
+    bookedBy: "Agent",
+    meetings: 142,
+    showRate: 0.78,
+    saoRate: 0.61,
+    stage2Rate: 0.42,
+    closedWonRate: 0.28,
+    avgDealSizeK: 168,
+  },
+  {
+    bookedBy: "AE",
+    meetings: 96,
+    showRate: 0.83,
+    saoRate: 0.64,
+    stage2Rate: 0.45,
+    closedWonRate: 0.26,
+    avgDealSizeK: 174,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Cost per opp across the agent stack
+// CRO ask: what does each agent cost us per opp it produces?
+
+export type AgentEconomics = {
+  agentId: string;
+  monthlyCostK: number; // license + usage in $K
+  oppsCreated30d: number;
+  costPerOppK: number; // monthlyCostK / oppsCreated30d, pre-computed
+  pipelinePerDollar: number; // pipeline$ per $1 spend
+};
+
+export const AGENT_ECONOMICS: AgentEconomics[] = [
+  {
+    agentId: "agt_11x_alice",
+    monthlyCostK: 18,
+    oppsCreated30d: 41,
+    costPerOppK: 0.439,
+    pipelinePerDollar: 117,
+  },
+  {
+    agentId: "agt_onemind_sched",
+    monthlyCostK: 6,
+    oppsCreated30d: 22,
+    costPerOppK: 0.273,
+    pipelinePerDollar: 163,
+  },
+  {
+    agentId: "agt_warmly_visitor",
+    monthlyCostK: 9,
+    oppsCreated30d: 14,
+    costPerOppK: 0.643,
+    pipelinePerDollar: 71,
+  },
+  {
+    agentId: "agt_rev_outbound",
+    monthlyCostK: 4,
+    oppsCreated30d: 9,
+    costPerOppK: 0.444,
+    pipelinePerDollar: 95,
+  },
+  {
+    agentId: "agt_clay_enrich",
+    monthlyCostK: 5,
+    oppsCreated30d: 0,
+    costPerOppK: 0,
+    pipelinePerDollar: 14,
+  },
+  {
+    agentId: "agt_zi_signals",
+    monthlyCostK: 11,
+    oppsCreated30d: 4,
+    costPerOppK: 2.75,
+    pipelinePerDollar: 10,
   },
 ];
 
