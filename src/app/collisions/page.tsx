@@ -46,15 +46,15 @@ export default function CollisionsPage() {
         />
         <StatCard
           label="Auto-resolved"
-          value="100%"
-          sublabel="Zero human intervention required"
+          value="94.4%"
+          sublabel="Resolved deterministically by policy"
           tone="green"
           icon={<ShieldCheck className="w-4 h-4" />}
         />
         <StatCard
-          label="Redirects to owner"
-          value="87"
-          sublabel="Policies preserve the human loop"
+          label="Conflicts directed to human approval"
+          value="8"
+          sublabel="Owner notified · 4‑min review window"
           tone="brand"
         />
       </div>
