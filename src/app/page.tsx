@@ -117,7 +117,7 @@ export default function CommandCenter() {
             description="12 agents across 7 vendors"
             action={
               <Link
-                href="/agents"
+                href="/directory/agents"
                 className="text-[11.5px] text-brand-700 hover:underline font-medium inline-flex items-center gap-1"
               >
                 All agents <ArrowRight className="w-3 h-3" />

@@ -1,28 +1,34 @@
 import Link from "next/link";
 import { Plus, Key } from "lucide-react";
-import { PageHeader, Section } from "@/components/ui/page-header";
+import { Section } from "@/components/ui/page-header";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
 import { AGENTS } from "@/lib/fixtures";
 import { formatNumber, pct } from "@/lib/utils";
 
-export default function AgentsPage() {
+export default function DirectoryAgentsPage() {
   return (
-    <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
-      <PageHeader
-        eyebrow="Agents"
-        title="Registered agents · 12 active"
-        description="Every agent authenticates with a scoped API key and declares the actions it will take. Revoke, pause, or throttle any agent in one click."
-        actions={
-          <>
-            <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800">
-              <Key className="w-3.5 h-3.5" /> Rotate keys
-            </button>
-            <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-ink-900 hover:bg-ink-800 text-[12.5px] font-medium text-white">
-              <Plus className="w-3.5 h-3.5" /> Register agent
-            </button>
-          </>
-        }
-      />
+    <div className="space-y-6">
+      <div className="flex items-end justify-between gap-6">
+        <div>
+          <h2 className="text-[16.5px] font-semibold text-ink-900">
+            Registered agents ·{" "}
+            {AGENTS.filter((a) => a.status === "active").length} active
+          </h2>
+          <p className="mt-1 text-[12.5px] text-muted max-w-2xl">
+            Every agent authenticates with a scoped API key and declares the
+            actions it will take. Revoke, pause, or throttle any agent in one
+            click.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800">
+            <Key className="w-3.5 h-3.5" /> Rotate keys
+          </button>
+          <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-ink-900 hover:bg-ink-800 text-[12.5px] font-medium text-white">
+            <Plus className="w-3.5 h-3.5" /> Register agent
+          </button>
+        </div>
+      </div>
 
       <Card className="overflow-hidden">
         <div className="h-11 px-4 flex items-center gap-3 border-b border-border text-[11px] uppercase tracking-wide text-ink-500 font-semibold">
@@ -44,7 +50,7 @@ export default function AgentsPage() {
                 <ToolIcon color={a.color} initials={a.initials} size={26} />
                 <div className="min-w-0">
                   <Link
-                    href={`/agents/${a.id}`}
+                    href={`/directory/agents/${a.id}`}
                     className="text-[13px] font-semibold text-ink-900 hover:text-brand-700 truncate block"
                   >
                     {a.name}
@@ -97,7 +103,7 @@ export default function AgentsPage() {
 
       <Card className="p-5" emphasis>
         <Section
-          title="How registration works"
+          title="How agent registration works"
           description="Any agent can integrate in an afternoon."
         >
           <ol className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4 text-[12.5px] text-ink-800">

@@ -26,10 +26,10 @@ export default async function AgentDetail({
   return (
     <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
       <Link
-        href="/agents"
+        href="/directory/agents"
         className="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink-900"
       >
-        <ArrowLeft className="w-3.5 h-3.5" /> Agents
+        <ArrowLeft className="w-3.5 h-3.5" /> Directory · Agents
       </Link>
 
       <div className="flex items-start gap-4">

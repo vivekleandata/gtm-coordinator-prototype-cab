@@ -50,7 +50,7 @@ const nav: NavItem[] = [
     icon: ShieldCheck,
     group: "Control",
   },
-  { href: "/agents", label: "Agents", icon: Bot, group: "Agents" },
+  { href: "/directory", label: "Directory", icon: Bot, group: "Agents" },
   {
     href: "/records",
     label: "Records",

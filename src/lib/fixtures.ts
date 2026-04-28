@@ -2447,7 +2447,426 @@ export const ORDERS: Order[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Registered Actions (data-change watches)
+//
+// A registered action binds a (source, object, field) tuple. When the field
+// changes on any record in scope, the change is recorded in the Action Ledger
+// alongside the agent decisions — giving operators one view of "what
+// happened" across both agent intent and underlying record state.
+
+export type DataSourceKind =
+  | "salesforce"
+  | "hubspot"
+  | "snowflake"
+  | "gainsight"
+  | "stripe"
+  | "zendesk"
+  | "segment";
+
+export type DataSource = {
+  id: string;
+  kind: DataSourceKind;
+  label: string; // human-friendly name, e.g. "Salesforce · Convex Prod"
+  vendor: string;
+  initials: string;
+  color: string;
+  status: "connected" | "degraded" | "disconnected";
+  lastSyncedAt: string;
+};
+
+export const DATA_SOURCES: DataSource[] = [
+  {
+    id: "src_sf_prod",
+    kind: "salesforce",
+    label: "Salesforce · Convex Prod",
+    vendor: "Salesforce",
+    initials: "SF",
+    color: "#00a1e0",
+    status: "connected",
+    lastSyncedAt: "12s ago",
+  },
+  {
+    id: "src_hubspot",
+    kind: "hubspot",
+    label: "HubSpot · Marketing",
+    vendor: "HubSpot",
+    initials: "Hu",
+    color: "#ff7a59",
+    status: "connected",
+    lastSyncedAt: "47s ago",
+  },
+  {
+    id: "src_snowflake",
+    kind: "snowflake",
+    label: "Snowflake · CONVEX_DW",
+    vendor: "Snowflake",
+    initials: "Sn",
+    color: "#29b5e8",
+    status: "connected",
+    lastSyncedAt: "3 min ago",
+  },
+  {
+    id: "src_gainsight",
+    kind: "gainsight",
+    label: "Gainsight · CS",
+    vendor: "Gainsight",
+    initials: "Gs",
+    color: "#fcb40a",
+    status: "connected",
+    lastSyncedAt: "1 min ago",
+  },
+  {
+    id: "src_stripe",
+    kind: "stripe",
+    label: "Stripe · Billing",
+    vendor: "Stripe",
+    initials: "St",
+    color: "#635bff",
+    status: "connected",
+    lastSyncedAt: "9 min ago",
+  },
+  {
+    id: "src_zendesk",
+    kind: "zendesk",
+    label: "Zendesk · Support",
+    vendor: "Zendesk",
+    initials: "Zd",
+    color: "#03363d",
+    status: "degraded",
+    lastSyncedAt: "22 min ago",
+  },
+];
+
+export type RegisteredActionStatus = "active" | "paused";
+
+export type RegisteredAction = {
+  id: string;
+  name: string;
+  description: string;
+  sourceId: string;
+  object: string; // canonical object name in source (e.g. Opportunity)
+  field: string; // field path (e.g. StageName)
+  fieldLabel: string; // human-friendly name (e.g. "Stage")
+  trigger: "any-change" | "enters" | "exits" | "crosses-threshold";
+  watchValue?: string; // e.g. "Closed Won" for "enters"
+  scope: string; // human description of which records are watched
+  recordsInScope: number;
+  observedActions: string[]; // tags, e.g. "policy:tier1", "ledger:append"
+  fanout: string[]; // what happens on a change — slack, agent broadcast, ledger
+  events7d: number;
+  registeredBy: string;
+  registeredAt: string;
+  lastEventAt: string;
+  status: RegisteredActionStatus;
+};
+
+export const REGISTERED_ACTIONS: RegisteredAction[] = [
+  {
+    id: "act_opp_stage",
+    name: "Opportunity stage change",
+    description:
+      "Watch every Opportunity for a stage transition. Triggers downstream agents (handoff, contracting, CSM intro) and gets every change into the Action Ledger.",
+    sourceId: "src_sf_prod",
+    object: "Opportunity",
+    field: "StageName",
+    fieldLabel: "Stage",
+    trigger: "any-change",
+    scope: "All open opportunities",
+    recordsInScope: 412,
+    observedActions: ["preflight.stage_gate", "ledger.append"],
+    fanout: [
+      "Notify agent: Convex Outbound",
+      "Slack #pipeline-moves",
+      "Action Ledger",
+    ],
+    events7d: 87,
+    registeredBy: "Mike Chen",
+    registeredAt: "2026-02-14",
+    lastEventAt: "2 min ago",
+    status: "active",
+  },
+  {
+    id: "act_account_status",
+    name: "Account status change",
+    description:
+      "Watch Account.Status across customers and prospects. Used to gate outbound when an account becomes At-Risk or Churned.",
+    sourceId: "src_sf_prod",
+    object: "Account",
+    field: "AccountStatus__c",
+    fieldLabel: "Status",
+    trigger: "any-change",
+    scope: "Tier 1 + Tier 2 accounts",
+    recordsInScope: 460,
+    observedActions: ["policy.lifecycle_gate", "ledger.append"],
+    fanout: ["Pause outbound agents", "Notify CSM owner", "Action Ledger"],
+    events7d: 19,
+    registeredBy: "Jen Park",
+    registeredAt: "2026-01-09",
+    lastEventAt: "11 min ago",
+    status: "active",
+  },
+  {
+    id: "act_opp_closed_won",
+    name: "Opportunity → Closed Won",
+    description:
+      "Specifically the moment an Opportunity enters Closed Won. Kicks off CSM intro, billing handoff, and customer-marketing motion.",
+    sourceId: "src_sf_prod",
+    object: "Opportunity",
+    field: "StageName",
+    fieldLabel: "Stage",
+    trigger: "enters",
+    watchValue: "Closed Won",
+    scope: "All opportunities",
+    recordsInScope: 412,
+    observedActions: ["agent.csm_intro", "agent.billing_handoff"],
+    fanout: [
+      "Provision CSM agent",
+      "Stripe customer creation",
+      "Action Ledger",
+    ],
+    events7d: 9,
+    registeredBy: "Mike Chen",
+    registeredAt: "2026-03-02",
+    lastEventAt: "44 min ago",
+    status: "active",
+  },
+  {
+    id: "act_lead_score",
+    name: "Lead score crosses 80",
+    description:
+      "Threshold watch on Lead.Score. Once a lead crosses 80, push to active outbound queue for human review.",
+    sourceId: "src_hubspot",
+    object: "Contact",
+    field: "hubspot_score",
+    fieldLabel: "Lead score",
+    trigger: "crosses-threshold",
+    watchValue: "≥ 80",
+    scope: "Net-new leads, last 30 days",
+    recordsInScope: 1284,
+    observedActions: ["agent.handoff_sdr", "ledger.append"],
+    fanout: ["SDR Slack DM", "Add to active sequence (after preflight)"],
+    events7d: 142,
+    registeredBy: "Priya Nair",
+    registeredAt: "2026-02-21",
+    lastEventAt: "3 min ago",
+    status: "active",
+  },
+  {
+    id: "act_arr_change",
+    name: "Customer MRR change ≥ 10%",
+    description:
+      "Threshold on monthly recurring revenue from Stripe. Used for expansion alerting and churn risk dashboards.",
+    sourceId: "src_stripe",
+    object: "Subscription",
+    field: "amount_mrr",
+    fieldLabel: "MRR",
+    trigger: "crosses-threshold",
+    watchValue: "± 10%",
+    scope: "Active paid subscriptions",
+    recordsInScope: 218,
+    observedActions: ["agent.expansion_signal", "ledger.append"],
+    fanout: ["Notify CSM", "Action Ledger", "Slack #expansion"],
+    events7d: 23,
+    registeredBy: "Maya Patel",
+    registeredAt: "2026-03-18",
+    lastEventAt: "1h ago",
+    status: "active",
+  },
+  {
+    id: "act_renewal_date",
+    name: "Renewal date moved",
+    description:
+      "Detect when a renewal date shifts on an Account. Frequently a leading indicator of churn or expansion timing.",
+    sourceId: "src_gainsight",
+    object: "Account",
+    field: "RenewalDate__c",
+    fieldLabel: "Renewal date",
+    trigger: "any-change",
+    scope: "Active customers",
+    recordsInScope: 196,
+    observedActions: ["policy.renewal_freeze", "ledger.append"],
+    fanout: ["Notify CSM owner", "Pause outbound agents 7d", "Action Ledger"],
+    events7d: 6,
+    registeredBy: "Maya Patel",
+    registeredAt: "2026-04-04",
+    lastEventAt: "5h ago",
+    status: "active",
+  },
+  {
+    id: "act_owner_change",
+    name: "Account owner changed",
+    description:
+      "Any change to Account.OwnerId. Triggers re-evaluation of every active sequence and a re-assignment of agent attribution.",
+    sourceId: "src_sf_prod",
+    object: "Account",
+    field: "OwnerId",
+    fieldLabel: "Owner",
+    trigger: "any-change",
+    scope: "All accounts",
+    recordsInScope: 1170,
+    observedActions: ["policy.ownership_lock", "ledger.append"],
+    fanout: ["Re-route active sequences", "Update attribution graph"],
+    events7d: 14,
+    registeredBy: "Jen Park",
+    registeredAt: "2025-12-19",
+    lastEventAt: "27 min ago",
+    status: "active",
+  },
+  {
+    id: "act_support_csat",
+    name: "CSAT drops below 4",
+    description:
+      "Watch Zendesk CSAT roll-up per account. A drop below 4 over rolling 7 days flags an at-risk customer.",
+    sourceId: "src_zendesk",
+    object: "Account",
+    field: "csat_rolling_7d",
+    fieldLabel: "CSAT (7d)",
+    trigger: "crosses-threshold",
+    watchValue: "< 4",
+    scope: "Active customers",
+    recordsInScope: 196,
+    observedActions: ["policy.at_risk", "ledger.append"],
+    fanout: ["Slack #cs-at-risk", "Pause expansion agents"],
+    events7d: 3,
+    registeredBy: "Maya Patel",
+    registeredAt: "2026-04-19",
+    lastEventAt: "2h ago",
+    status: "paused",
+  },
+  {
+    id: "act_intent_score",
+    name: "Intent surge",
+    description:
+      "Snowflake-derived 6sense intent score crosses 70 on a target account. Fires the inbound-warm-handoff agent.",
+    sourceId: "src_snowflake",
+    object: "Account",
+    field: "intent_score_6sense",
+    fieldLabel: "Intent score",
+    trigger: "crosses-threshold",
+    watchValue: "≥ 70",
+    scope: "Target account list (ABM Q2)",
+    recordsInScope: 348,
+    observedActions: ["agent.warm_inbound", "ledger.append"],
+    fanout: ["Warmly notification", "Notify owner", "Action Ledger"],
+    events7d: 41,
+    registeredBy: "Mike Chen",
+    registeredAt: "2026-03-24",
+    lastEventAt: "8 min ago",
+    status: "active",
+  },
+];
+
+export type DataChangeEvent = {
+  id: string;
+  actionId: string;
+  recordId: string;
+  fromValue: string;
+  toValue: string;
+  secondsAgo: number;
+  actor: string; // who/what made the change in the source system
+};
+
+const dataChangeRaw: DataChangeEvent[] = [
+  {
+    id: "evt_dc_8201",
+    actionId: "act_opp_stage",
+    recordId: "rec_lena_atlas",
+    fromValue: "Discovery",
+    toValue: "Proposal",
+    secondsAgo: 142,
+    actor: "Mike Chen (AE)",
+  },
+  {
+    id: "evt_dc_8200",
+    actionId: "act_opp_stage",
+    recordId: "rec_jane_bigcorp",
+    fromValue: "Proposal",
+    toValue: "Negotiation",
+    secondsAgo: 312,
+    actor: "Mike Chen (AE)",
+  },
+  {
+    id: "evt_dc_8199",
+    actionId: "act_lead_score",
+    recordId: "rec_emma_tech",
+    fromValue: "76",
+    toValue: "84",
+    secondsAgo: 188,
+    actor: "HubSpot scoring engine",
+  },
+  {
+    id: "evt_dc_8198",
+    actionId: "act_account_status",
+    recordId: "rec_mike_company",
+    fromValue: "Active",
+    toValue: "At Risk",
+    secondsAgo: 661,
+    actor: "Maya Patel (CSM)",
+  },
+  {
+    id: "evt_dc_8197",
+    actionId: "act_owner_change",
+    recordId: "rec_sarah_ent",
+    fromValue: "James Park",
+    toValue: "Mike Chen",
+    secondsAgo: 1622,
+    actor: "RevOps round-robin",
+  },
+  {
+    id: "evt_dc_8196",
+    actionId: "act_intent_score",
+    recordId: "rec_jane_bigcorp",
+    fromValue: "62",
+    toValue: "78",
+    secondsAgo: 482,
+    actor: "6sense via Snowflake",
+  },
+  {
+    id: "evt_dc_8195",
+    actionId: "act_arr_change",
+    recordId: "rec_sarah_ent",
+    fromValue: "$8,400",
+    toValue: "$11,200",
+    secondsAgo: 3641,
+    actor: "Stripe billing",
+  },
+  {
+    id: "evt_dc_8194",
+    actionId: "act_opp_closed_won",
+    recordId: "rec_lena_atlas",
+    fromValue: "Negotiation",
+    toValue: "Closed Won",
+    secondsAgo: 2641,
+    actor: "Mike Chen (AE)",
+  },
+  {
+    id: "evt_dc_8193",
+    actionId: "act_renewal_date",
+    recordId: "rec_mike_company",
+    fromValue: "2026-08-12",
+    toValue: "2026-10-12",
+    secondsAgo: 18001,
+    actor: "James Park (CSM)",
+  },
+];
+
+export type DataChangeEntry = DataChangeEvent & { tsMs: number };
+
+export function getDataChanges(nowMs: number = Date.now()): DataChangeEntry[] {
+  return dataChangeRaw.map((e) => ({
+    ...e,
+    tsMs: nowMs - e.secondsAgo * 1000,
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Lookups
 
 export const AGENTS_BY_ID = Object.fromEntries(AGENTS.map((a) => [a.id, a]));
 export const RECORDS_BY_ID = Object.fromEntries(RECORDS.map((r) => [r.id, r]));
+export const DATA_SOURCES_BY_ID = Object.fromEntries(
+  DATA_SOURCES.map((s) => [s.id, s]),
+);
+export const REGISTERED_ACTIONS_BY_ID = Object.fromEntries(
+  REGISTERED_ACTIONS.map((a) => [a.id, a]),
+);
