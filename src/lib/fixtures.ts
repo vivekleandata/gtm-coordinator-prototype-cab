@@ -551,13 +551,32 @@ export type PolicyType =
   | "approval"
   | "priority"
   | "channel"
-  | "quiet-hours";
+  | "quiet-hours"
+  | "budget";
+
+export type PolicyCategory =
+  | "identity"
+  | "communication-budgets"
+  | "sequencing"
+  | "stage-gates"
+  | "approvals"
+  | "compliance";
+
+export type ChannelCap = { channel: string; cap: number; period: string };
+
+export type BudgetMeta = {
+  weeklyTouches: number;
+  dailyTouches: number;
+  cooldownMinutes: number;
+  channelCaps: ChannelCap[];
+};
 
 export type Policy = {
   id: string;
   name: string;
   description: string;
   type: PolicyType;
+  category: PolicyCategory;
   scope: string;
   status: "active" | "draft" | "paused";
   enforcement: "block" | "warn" | "redirect";
@@ -565,7 +584,46 @@ export type Policy = {
   triggered7d: number;
   lastModified: string;
   rules: string[];
+  budget?: BudgetMeta;
 };
+
+export const POLICY_CATEGORIES: Array<{
+  key: PolicyCategory;
+  label: string;
+  blurb: string;
+}> = [
+  {
+    key: "identity",
+    label: "Identity & ownership",
+    blurb: "Who is allowed to act on a record. Humans always win.",
+  },
+  {
+    key: "communication-budgets",
+    label: "Communication budgets",
+    blurb:
+      "Shared touch budget per record across every agent — counted in Redis, enforced in ≤10 ms.",
+  },
+  {
+    key: "sequencing",
+    label: "Sequencing & cadence",
+    blurb: "One coordinated outbound motion per record.",
+  },
+  {
+    key: "stage-gates",
+    label: "Stage gates",
+    blurb: "Pipeline stage decides what agents may attempt.",
+  },
+  {
+    key: "approvals",
+    label: "Approvals",
+    blurb: "Decisions that need a human signature first.",
+  },
+  {
+    key: "compliance",
+    label: "Compliance",
+    blurb: "Hard rules that come from law, not preference.",
+  },
+];
 
 export const POLICIES: Policy[] = [
   {
@@ -574,6 +632,7 @@ export const POLICIES: Policy[] = [
     description:
       "Require AE sign-off before any outbound on Tier-1 accounts with open opportunities.",
     type: "approval",
+    category: "approvals",
     scope: "Tier-1 + open opp",
     status: "active",
     enforcement: "redirect",
@@ -592,6 +651,7 @@ export const POLICIES: Policy[] = [
     description:
       "Suppress automated touches between 18:00–08:00 local time for EMEA accounts.",
     type: "quiet-hours",
+    category: "communication-budgets",
     scope: "EMEA North/South",
     status: "active",
     enforcement: "block",
@@ -609,6 +669,7 @@ export const POLICIES: Policy[] = [
     description:
       "Only one outbound sequence can be active on a record at a time.",
     type: "sequence",
+    category: "sequencing",
     scope: "All records",
     status: "active",
     enforcement: "block",
@@ -627,6 +688,7 @@ export const POLICIES: Policy[] = [
     description:
       "On Customer lifecycle, route outbound agents away from inbox; CSM owns the thread.",
     type: "priority",
+    category: "identity",
     scope: "lifecycle = Customer",
     status: "active",
     enforcement: "redirect",
@@ -645,6 +707,7 @@ export const POLICIES: Policy[] = [
     description:
       "Hold a 4-minute booking lock — only one scheduling agent books per record.",
     type: "sequence",
+    category: "sequencing",
     scope: "action = schedule_meeting",
     status: "active",
     enforcement: "block",
@@ -656,6 +719,96 @@ export const POLICIES: Policy[] = [
       "AND requester.agentId != lock.holder",
       "THEN decision = WAIT",
     ],
+  },
+  {
+    id: "pol_budget_tier1",
+    name: "Tier 1 — Enterprise Budget",
+    description:
+      "Shared communication budget across every agent and human SDR for enterprise accounts. 14 weekly touches, 60 min cooldown between touches.",
+    type: "budget",
+    category: "communication-budgets",
+    scope: "tier = Tier 1",
+    status: "active",
+    enforcement: "block",
+    appliedTo: "142 accounts",
+    triggered7d: 184,
+    lastModified: "2026-04-12",
+    rules: [
+      "IF record.tier == 'Tier 1'",
+      "AND record.touchesThisWeek >= 14 OR record.touchesToday >= 3",
+      "AND now - record.lastTouchAt < 60m",
+      "THEN decision = NO_GO (budget exhausted)",
+    ],
+    budget: {
+      weeklyTouches: 14,
+      dailyTouches: 3,
+      cooldownMinutes: 60,
+      channelCaps: [
+        { channel: "Email", cap: 2, period: "per day" },
+        { channel: "LinkedIn", cap: 1, period: "per day" },
+        { channel: "Chat", cap: 3, period: "per day" },
+        { channel: "Phone", cap: 1, period: "per day" },
+      ],
+    },
+  },
+  {
+    id: "pol_budget_tier2",
+    name: "Tier 2 — Mid-market Budget",
+    description:
+      "Shared touch budget for mid-market accounts. 10 weekly touches, 90 min cooldown.",
+    type: "budget",
+    category: "communication-budgets",
+    scope: "tier = Tier 2",
+    status: "active",
+    enforcement: "block",
+    appliedTo: "318 accounts",
+    triggered7d: 296,
+    lastModified: "2026-04-12",
+    rules: [
+      "IF record.tier == 'Tier 2'",
+      "AND record.touchesThisWeek >= 10 OR record.touchesToday >= 2",
+      "AND now - record.lastTouchAt < 90m",
+      "THEN decision = NO_GO (budget exhausted)",
+    ],
+    budget: {
+      weeklyTouches: 10,
+      dailyTouches: 2,
+      cooldownMinutes: 90,
+      channelCaps: [
+        { channel: "Email", cap: 1, period: "per day" },
+        { channel: "LinkedIn", cap: 1, period: "per day" },
+        { channel: "Chat", cap: 2, period: "per day" },
+      ],
+    },
+  },
+  {
+    id: "pol_budget_tier3",
+    name: "Tier 3 — SMB Budget",
+    description:
+      "Shared touch budget for SMB accounts. 6 weekly touches, 4 hour cooldown.",
+    type: "budget",
+    category: "communication-budgets",
+    scope: "tier = Tier 3",
+    status: "active",
+    enforcement: "block",
+    appliedTo: "612 accounts",
+    triggered7d: 432,
+    lastModified: "2026-04-12",
+    rules: [
+      "IF record.tier == 'Tier 3'",
+      "AND record.touchesThisWeek >= 6 OR record.touchesToday >= 1",
+      "AND now - record.lastTouchAt < 240m",
+      "THEN decision = NO_GO (budget exhausted)",
+    ],
+    budget: {
+      weeklyTouches: 6,
+      dailyTouches: 1,
+      cooldownMinutes: 240,
+      channelCaps: [
+        { channel: "Email", cap: 1, period: "per day" },
+        { channel: "LinkedIn", cap: 1, period: "per week" },
+      ],
+    },
   },
 ];
 
@@ -1116,51 +1269,32 @@ export const NEW_POLICY_SIMULATION: SimulationResult = {
 };
 
 // ---------------------------------------------------------------------------
-// Communication Budgets
+// Communication Budgets — now expressed as Policy entries with category
+// "communication-budgets". This shim is kept for any code that still reaches
+// for the old BUDGETS array; it is derived from POLICIES so a single edit
+// updates everywhere.
 
 export type BudgetTier = {
   name: string;
   weeklyTouches: number;
   dailyTouches: number;
   cooldownMinutes: number;
-  channelCaps: Array<{ channel: string; cap: number; period: string }>;
+  channelCaps: ChannelCap[];
 };
 
-export const BUDGETS: BudgetTier[] = [
-  {
-    name: "Tier 1 — Enterprise",
-    weeklyTouches: 14,
-    dailyTouches: 3,
-    cooldownMinutes: 60,
-    channelCaps: [
-      { channel: "Email", cap: 2, period: "per day" },
-      { channel: "LinkedIn", cap: 1, period: "per day" },
-      { channel: "Chat", cap: 3, period: "per day" },
-      { channel: "Phone", cap: 1, period: "per day" },
-    ],
-  },
-  {
-    name: "Tier 2 — Mid-market",
-    weeklyTouches: 10,
-    dailyTouches: 2,
-    cooldownMinutes: 90,
-    channelCaps: [
-      { channel: "Email", cap: 1, period: "per day" },
-      { channel: "LinkedIn", cap: 1, period: "per day" },
-      { channel: "Chat", cap: 2, period: "per day" },
-    ],
-  },
-  {
-    name: "Tier 3 — SMB",
-    weeklyTouches: 6,
-    dailyTouches: 1,
-    cooldownMinutes: 240,
-    channelCaps: [
-      { channel: "Email", cap: 1, period: "per day" },
-      { channel: "LinkedIn", cap: 1, period: "per week" },
-    ],
-  },
-];
+export const BUDGET_POLICIES: Policy[] = POLICIES.filter(
+  (p) => p.category === "communication-budgets" && p.budget,
+);
+
+export const BUDGETS: BudgetTier[] = BUDGET_POLICIES.filter(
+  (p) => p.budget,
+).map((p) => ({
+  name: p.name,
+  weeklyTouches: p.budget!.weeklyTouches,
+  dailyTouches: p.budget!.dailyTouches,
+  cooldownMinutes: p.budget!.cooldownMinutes,
+  channelCaps: p.budget!.channelCaps,
+}));
 
 // ---------------------------------------------------------------------------
 // Collisions

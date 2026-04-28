@@ -36,8 +36,7 @@ decision lands in an immutable Action Ledger.
 - `/records/custom/quotes`, `/records/custom/orders` — custom-object views
 - `/records/[id]` — canonical record detail with cross-agent timeline
 - `/ledger` — immutable action ledger with filters
-- `/policies` — deterministic policy engine + dry-run simulation
-- `/budgets` — communication budgets per tier + channel caps
+- `/policies` — unified policy engine: identity, communication budgets, sequencing, stage gates, approvals, compliance — all in one tab strip with dry-run simulation. Communication budgets live as `category: "communication-budgets"` policy entries (formerly the standalone `/budgets` page). Deep link: `/policies?category=communication-budgets`.
 - `/attribution` — outcome attribution per agent (pipeline, revenue, cycle)
 - `/partners` — partner ecosystem grid + webhook deliveries
 - `/mcp` — MCP tools + REST/SDK code snippets

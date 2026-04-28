@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { PolicyBuilder } from "@/components/policy-builder";
 import { POLICIES } from "@/lib/fixtures";
@@ -10,5 +11,9 @@ export default async function EditPolicyPage({
   const { id } = await params;
   const policy = POLICIES.find((p) => p.id === id);
   if (!policy) notFound();
-  return <PolicyBuilder mode="edit" policyId={id} />;
+  return (
+    <Suspense fallback={null}>
+      <PolicyBuilder mode="edit" policyId={id} />
+    </Suspense>
+  );
 }

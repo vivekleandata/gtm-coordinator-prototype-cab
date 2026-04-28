@@ -9,7 +9,6 @@ import {
   Users,
   Scroll,
   ShieldCheck,
-  Coins,
   Zap,
   TrendingUp,
   Plug,
@@ -76,7 +75,6 @@ const nav: NavItem[] = [
   },
   { href: "/ledger", label: "Action Ledger", icon: Scroll, group: "Agents" },
   { href: "/policies", label: "Policies", icon: ShieldCheck, group: "Insight" },
-  { href: "/budgets", label: "Budgets", icon: Coins, group: "Insight" },
   {
     href: "/attribution",
     label: "Attribution",

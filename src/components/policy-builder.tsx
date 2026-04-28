@@ -16,14 +16,17 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, StatusChip } from "@/components/ui/primitives";
+import { useSearchParams } from "next/navigation";
 import {
   CONDITION_FIELDS,
   NEW_POLICY_SIMULATION,
   POLICIES,
+  POLICY_CATEGORIES,
   POLICY_VERSIONS,
   SCOPE_FACETS,
   SIMULATION_RESULTS,
   type Policy,
+  type PolicyCategory,
   type PolicyType,
   type PolicyVersion,
   type SimulationResult,
@@ -59,7 +62,21 @@ const TYPE_OPTIONS: Array<{ value: PolicyType; label: string; hint: string }> =
       label: "Quiet hours",
       hint: "Time-of-day suppression",
     },
+    {
+      value: "budget",
+      label: "Budget",
+      hint: "Communication budget per record",
+    },
   ];
+
+const DEFAULT_TYPE_FOR_CATEGORY: Record<PolicyCategory, PolicyType> = {
+  identity: "priority",
+  "communication-budgets": "budget",
+  sequencing: "sequence",
+  "stage-gates": "approval",
+  approvals: "approval",
+  compliance: "approval",
+};
 
 const ENFORCEMENT_OPTIONS: Array<{
   value: Enforcement;
@@ -236,11 +253,24 @@ export function PolicyBuilder({
     [policy],
   );
 
+  const searchParams = useSearchParams();
+  const initialCategory = useMemo<PolicyCategory>(() => {
+    if (policy) return policy.category;
+    const param = searchParams?.get("category") as PolicyCategory | null;
+    if (param && POLICY_CATEGORIES.some((c) => c.key === param)) {
+      return param;
+    }
+    return "approvals";
+  }, [policy, searchParams]);
+
   const [name, setName] = useState(policy?.name ?? "Untitled policy");
   const [description, setDescription] = useState(
     policy?.description ?? "Describe what this policy is meant to enforce.",
   );
-  const [type, setType] = useState<PolicyType>(policy?.type ?? "approval");
+  const [category, setCategory] = useState<PolicyCategory>(initialCategory);
+  const [type, setType] = useState<PolicyType>(
+    policy?.type ?? DEFAULT_TYPE_FOR_CATEGORY[initialCategory],
+  );
   const [scope, setScope] = useState<ScopeSelection>(() => seedScope(policy));
   const [conditions, setConditions] = useState<Condition[]>(
     policy ? inferTypeRules(policy) : seedConditions(),
@@ -314,6 +344,30 @@ export function PolicyBuilder({
                 rows={2}
                 className="w-full mt-1 px-3 py-2 rounded-md border border-border bg-surface text-[13px] text-ink-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
               />
+            </div>
+            <div>
+              <Label>Category</Label>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {POLICY_CATEGORIES.map((c) => (
+                  <button
+                    key={c.key}
+                    onClick={() => {
+                      setCategory(c.key);
+                      // sensible default type when category changes
+                      setType(DEFAULT_TYPE_FOR_CATEGORY[c.key]);
+                    }}
+                    className={cn(
+                      "h-7 px-2.5 rounded-full border text-[12px] font-medium transition-colors",
+                      category === c.key
+                        ? "bg-brand-50 text-brand-700 border-brand-200"
+                        : "bg-surface border-border text-ink-700 hover:bg-ink-50",
+                    )}
+                    title={c.blurb}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <Label>Type</Label>
