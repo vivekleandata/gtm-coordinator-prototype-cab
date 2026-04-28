@@ -2115,6 +2115,204 @@ export const REP_GUARANTEE = {
 };
 
 // ---------------------------------------------------------------------------
+// Custom objects: Quotes & Orders
+
+export type Quote = {
+  id: string;
+  number: string;
+  account: string;
+  accountSlug: string;
+  primaryContact: string;
+  amount: string;
+  stage: "Draft" | "In Review" | "Pending Signature" | "Signed" | "Expired";
+  ownerName: string;
+  lastActivity: string;
+  agentsActive: string[];
+  conflicts7d: number;
+};
+
+export const QUOTES: Quote[] = [
+  {
+    id: "q_2026_0411",
+    number: "Q-2026-0411",
+    account: "BigCorp",
+    accountSlug: "bigcorp",
+    primaryContact: "Jane Doe",
+    amount: "$184,000",
+    stage: "Pending Signature",
+    ownerName: "Mike Chen",
+    lastActivity: "12 min ago",
+    agentsActive: ["agt_convex_outbound", "agt_clay_enrich"],
+    conflicts7d: 0,
+  },
+  {
+    id: "q_2026_0412",
+    number: "Q-2026-0412",
+    account: "Atlas Tech",
+    accountSlug: "atlas-tech",
+    primaryContact: "Lena Okafor",
+    amount: "$62,500",
+    stage: "In Review",
+    ownerName: "Lisa Park",
+    lastActivity: "1 hr ago",
+    agentsActive: ["agt_11x_alice", "agt_regie_seq"],
+    conflicts7d: 1,
+  },
+  {
+    id: "q_2026_0413",
+    number: "Q-2026-0413",
+    account: "Enterprise Co",
+    accountSlug: "enterprise-co",
+    primaryContact: "Sarah Williams",
+    amount: "$420,000",
+    stage: "Draft",
+    ownerName: "Tom Anderson",
+    lastActivity: "3 hr ago",
+    agentsActive: ["agt_zoominfo_signals"],
+    conflicts7d: 0,
+  },
+  {
+    id: "q_2026_0414",
+    number: "Q-2026-0414",
+    account: "StartupIO",
+    accountSlug: "startupio",
+    primaryContact: "John Smith",
+    amount: "$28,800",
+    stage: "Signed",
+    ownerName: "Sarah Johnson",
+    lastActivity: "Yesterday",
+    agentsActive: ["agt_qualified_piper"],
+    conflicts7d: 0,
+  },
+  {
+    id: "q_2026_0415",
+    number: "Q-2026-0415",
+    account: "Tech Co",
+    accountSlug: "tech-co",
+    primaryContact: "Emma Walsh",
+    amount: "$96,400",
+    stage: "Pending Signature",
+    ownerName: "Priya Nair",
+    lastActivity: "4 hr ago",
+    agentsActive: ["agt_warmly_visitor", "agt_convex_outbound"],
+    conflicts7d: 2,
+  },
+  {
+    id: "q_2026_0416",
+    number: "Q-2026-0416",
+    account: "Company Inc",
+    accountSlug: "company-inc",
+    primaryContact: "Mike Rodriguez",
+    amount: "$54,200",
+    stage: "Expired",
+    ownerName: "James Park",
+    lastActivity: "8 days ago",
+    agentsActive: [],
+    conflicts7d: 0,
+  },
+];
+
+export type Order = {
+  id: string;
+  number: string;
+  account: string;
+  accountSlug: string;
+  amount: string;
+  status:
+    | "Provisioning"
+    | "Active"
+    | "Renewal Pending"
+    | "Past Due"
+    | "Cancelled";
+  ownerName: string;
+  startsOn: string;
+  lastActivity: string;
+  agentsActive: string[];
+  conflicts7d: number;
+};
+
+export const ORDERS: Order[] = [
+  {
+    id: "o_2026_1018",
+    number: "O-2026-1018",
+    account: "BigCorp",
+    accountSlug: "bigcorp",
+    amount: "$184,000",
+    status: "Provisioning",
+    ownerName: "Mike Chen",
+    startsOn: "May 1, 2026",
+    lastActivity: "9 min ago",
+    agentsActive: ["agt_convex_outbound"],
+    conflicts7d: 0,
+  },
+  {
+    id: "o_2026_1019",
+    number: "O-2026-1019",
+    account: "StartupIO",
+    accountSlug: "startupio",
+    amount: "$28,800",
+    status: "Active",
+    ownerName: "Sarah Johnson",
+    startsOn: "Mar 14, 2026",
+    lastActivity: "2 days ago",
+    agentsActive: [],
+    conflicts7d: 0,
+  },
+  {
+    id: "o_2026_0921",
+    number: "O-2026-0921",
+    account: "Enterprise Co",
+    accountSlug: "enterprise-co",
+    amount: "$612,500",
+    status: "Renewal Pending",
+    ownerName: "Tom Anderson",
+    startsOn: "Renews Jun 30, 2026",
+    lastActivity: "30 min ago",
+    agentsActive: ["agt_zoominfo_signals", "agt_clay_enrich"],
+    conflicts7d: 1,
+  },
+  {
+    id: "o_2026_0822",
+    number: "O-2026-0822",
+    account: "Atlas Tech",
+    accountSlug: "atlas-tech",
+    amount: "$48,000",
+    status: "Past Due",
+    ownerName: "Lisa Park",
+    startsOn: "Started Feb 1, 2026",
+    lastActivity: "Invoice 14d overdue",
+    agentsActive: ["agt_regie_seq"],
+    conflicts7d: 3,
+  },
+  {
+    id: "o_2026_0723",
+    number: "O-2026-0723",
+    account: "Tech Co",
+    accountSlug: "tech-co",
+    amount: "$96,400",
+    status: "Active",
+    ownerName: "Priya Nair",
+    startsOn: "Jan 8, 2026",
+    lastActivity: "3 hr ago",
+    agentsActive: ["agt_warmly_visitor"],
+    conflicts7d: 0,
+  },
+  {
+    id: "o_2026_0624",
+    number: "O-2026-0624",
+    account: "Company Inc",
+    accountSlug: "company-inc",
+    amount: "$54,200",
+    status: "Cancelled",
+    ownerName: "James Park",
+    startsOn: "Cancelled Apr 10, 2026",
+    lastActivity: "18 days ago",
+    agentsActive: [],
+    conflicts7d: 0,
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Lookups
 
 export const AGENTS_BY_ID = Object.fromEntries(AGENTS.map((a) => [a.id, a]));

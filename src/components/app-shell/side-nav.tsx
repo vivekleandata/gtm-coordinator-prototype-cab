@@ -113,11 +113,8 @@ export function SideNav() {
           SF
         </div>
         <div className="flex flex-col leading-tight min-w-0">
-          <span className="text-[13px] font-semibold text-ink-900 truncate">
+          <span className="text-[14px] font-semibold text-ink-900 truncate">
             Convex Software
-          </span>
-          <span className="text-[10.5px] text-muted">
-            Production · US‑East‑1
           </span>
         </div>
       </div>
