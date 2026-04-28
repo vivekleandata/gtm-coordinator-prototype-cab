@@ -26,7 +26,7 @@ const serif = Fraunces({
 export const metadata: Metadata = {
   title: "GTM Agent Coordinator — LeanData",
   description:
-    "Control plane for AI agents operating across your GTM stack — identity, preflight, collision detection, scheduling, policy, attribution.",
+    "Control plane for AI agents operating across your GTM stack — identity, preflight, collision detection, policy, attribution.",
 };
 
 export default function RootLayout({
