@@ -1,15 +1,18 @@
 import { cn } from "@/lib/utils";
+import { InfoHover } from "@/components/ui/info-hover";
 
 export function PageHeader({
   title,
   eyebrow,
   description,
+  meta,
   actions,
   className,
 }: {
   title: string;
   eyebrow?: string;
-  description?: string;
+  description?: React.ReactNode;
+  meta?: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
 }) {
@@ -21,14 +24,11 @@ export function PageHeader({
             {eyebrow}
           </div>
         )}
-        <h1 className="text-[26px] leading-tight font-semibold tracking-tight text-ink-900 hero-serif">
+        <h1 className="inline-flex items-center gap-2 text-[26px] leading-tight font-semibold tracking-tight text-ink-900 hero-serif">
           {title}
+          {description && <InfoHover>{description}</InfoHover>}
         </h1>
-        {description && (
-          <p className="mt-1.5 text-[13.5px] text-muted max-w-2xl">
-            {description}
-          </p>
-        )}
+        {meta && <div className="mt-1 text-[12.5px] text-muted">{meta}</div>}
       </div>
       {actions && (
         <div className="flex items-center gap-2 shrink-0">{actions}</div>

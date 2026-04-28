@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Bot, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AGENTS, REGISTERED_ACTIONS } from "@/lib/fixtures";
+import { InfoHover } from "@/components/ui/info-hover";
 
 const tabs = [
   {
@@ -46,17 +47,17 @@ export default function DirectoryLayout({
         <div className="text-[11px] uppercase tracking-wider font-semibold text-brand mb-1">
           Directory
         </div>
-        <h1 className="text-[26px] leading-tight font-semibold tracking-tight text-ink-900 hero-serif">
+        <h1 className="inline-flex items-center gap-2 text-[26px] leading-tight font-semibold tracking-tight text-ink-900 hero-serif">
           Everything the Coordinator watches.
+          <InfoHover>
+            Two kinds of registration sit side-by-side.{" "}
+            <strong className="font-semibold text-white">Agents</strong> declare
+            what they intend to do before they do it.{" "}
+            <strong className="font-semibold text-white">Actions</strong>{" "}
+            declare what data changes you care about — every match lands in the
+            Action Ledger, ready for downstream policies and agents to react.
+          </InfoHover>
         </h1>
-        <p className="mt-1.5 text-[13.5px] text-muted max-w-2xl">
-          Two kinds of registration sit side-by-side.{" "}
-          <strong className="text-ink-800 font-semibold">Agents</strong> declare
-          what they intend to do before they do it.{" "}
-          <strong className="text-ink-800 font-semibold">Actions</strong>{" "}
-          declare what data changes you care about — every match lands in the
-          Action Ledger, ready for downstream policies and agents to react.
-        </p>
       </div>
 
       <div className="space-y-3">

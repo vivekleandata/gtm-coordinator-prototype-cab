@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Section } from "@/components/ui/page-header";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
+import { InfoHover } from "@/components/ui/info-hover";
 import {
   REGISTERED_ACTIONS,
   DATA_SOURCES_BY_ID,
@@ -49,21 +50,14 @@ export default function DirectoryActionsPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between gap-6">
         <div>
-          <h2 className="text-[16.5px] font-semibold text-ink-900">
+          <h2 className="inline-flex items-center gap-2 text-[16.5px] font-semibold text-ink-900">
             Registered actions · {activeCount} active
+            <InfoHover>
+              Tell the Coordinator which data changes matter. Every matching
+              change is appended to the Action Ledger with from/to values,
+              source, and actor — ready for policies and agents to react.
+            </InfoHover>
           </h2>
-          <p className="mt-1 text-[12.5px] text-muted max-w-2xl">
-            Tell the Coordinator which data changes matter. Every matching
-            change is appended to the{" "}
-            <Link
-              href="/ledger?stream=data"
-              className="text-brand-700 hover:underline font-medium"
-            >
-              Action Ledger
-            </Link>{" "}
-            with from/to values, source, and actor — ready for policies and
-            agents to react.
-          </p>
         </div>
         <div className="flex items-center gap-2">
           <Link

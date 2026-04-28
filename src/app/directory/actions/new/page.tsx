@@ -12,6 +12,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
+import { InfoHover } from "@/components/ui/info-hover";
 import { DATA_SOURCES, DATA_SOURCES_BY_ID } from "@/lib/fixtures";
 
 // Visual-only registration form. Pre-selected example: Opportunity stage
@@ -85,14 +86,14 @@ export default function RegisterActionPage() {
         <div className="text-[11px] uppercase tracking-wider font-semibold text-brand mb-1">
           Register an action
         </div>
-        <h1 className="text-[26px] leading-tight font-semibold tracking-tight text-ink-900 hero-serif">
+        <h1 className="inline-flex items-center gap-2 text-[26px] leading-tight font-semibold tracking-tight text-ink-900 hero-serif">
           Pick a source, an object, a field. Done.
+          <InfoHover>
+            The Coordinator will watch every record in scope. The moment that
+            field changes, an entry appears in the Action Ledger and any
+            downstream policies, agents, or webhooks fire — under 500 ms.
+          </InfoHover>
         </h1>
-        <p className="mt-1.5 text-[13.5px] text-muted max-w-2xl">
-          The Coordinator will watch every record in scope. The moment that
-          field changes, an entry appears in the Action Ledger and any
-          downstream policies, agents, or webhooks fire — under 500 ms.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">

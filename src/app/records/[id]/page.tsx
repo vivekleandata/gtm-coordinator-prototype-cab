@@ -34,7 +34,7 @@ export default async function RecordDetail({
       <PageHeader
         eyebrow={`Record · ${record.company}`}
         title={record.name}
-        description={`${record.title} · ${record.email}`}
+        meta={`${record.title} · ${record.email}`}
         actions={
           <>
             <StatusChip tone="brand">{record.lifecycle}</StatusChip>

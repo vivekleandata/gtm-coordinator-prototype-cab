@@ -38,7 +38,7 @@ export default async function AgentDetail({
           <PageHeader
             eyebrow={`${agent.vendor} · ${agent.kind}`}
             title={agent.name}
-            description={`Registered ${agent.registeredAt} · API key ${agent.apiKeyPreview}`}
+            meta={`Registered ${agent.registeredAt} · API key ${agent.apiKeyPreview}`}
             actions={
               <>
                 <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800">

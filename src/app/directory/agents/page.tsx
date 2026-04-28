@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus, Key } from "lucide-react";
 import { Section } from "@/components/ui/page-header";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
+import { InfoHover } from "@/components/ui/info-hover";
 import { AGENTS } from "@/lib/fixtures";
 import { formatNumber, pct } from "@/lib/utils";
 
@@ -10,15 +11,15 @@ export default function DirectoryAgentsPage() {
     <div className="space-y-6">
       <div className="flex items-end justify-between gap-6">
         <div>
-          <h2 className="text-[16.5px] font-semibold text-ink-900">
+          <h2 className="inline-flex items-center gap-2 text-[16.5px] font-semibold text-ink-900">
             Registered agents ·{" "}
             {AGENTS.filter((a) => a.status === "active").length} active
+            <InfoHover>
+              Every agent authenticates with a scoped API key and declares the
+              actions it will take. Revoke, pause, or throttle any agent in one
+              click.
+            </InfoHover>
           </h2>
-          <p className="mt-1 text-[12.5px] text-muted max-w-2xl">
-            Every agent authenticates with a scoped API key and declares the
-            actions it will take. Revoke, pause, or throttle any agent in one
-            click.
-          </p>
         </div>
         <div className="flex items-center gap-2">
           <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800">
