@@ -2,7 +2,13 @@ import { Boxes } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
 import { RecordsFilters } from "@/components/records-table";
-import { AGENTS_BY_ID, ORDERS, type Order } from "@/lib/fixtures";
+import { SourceMeta } from "@/components/ui/source-chip";
+import {
+  AGENTS_BY_ID,
+  ORDERS,
+  RECORD_SET_SOURCES,
+  type Order,
+} from "@/lib/fixtures";
 
 const statusTone: Record<Order["status"], "neutral" | "amber" | "green"> = {
   Provisioning: "amber",
@@ -13,12 +19,14 @@ const statusTone: Record<Order["status"], "neutral" | "amber" | "green"> = {
 };
 
 export default function OrdersPage() {
+  const meta = RECORD_SET_SOURCES.orders;
   return (
     <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
       <PageHeader
         eyebrow="Records · Custom · Orders"
         title="Orders the Coordinator is watching."
         description="Order objects flow into the ledger the moment they're registered. Listen for status, amount, or fulfillment changes — same observability surface as accounts and opportunities."
+        meta={<SourceMeta sources={meta.sources} primary={meta.primary} />}
       />
 
       <RecordsFilters placeholder="Search orders by number, account, or status…" />

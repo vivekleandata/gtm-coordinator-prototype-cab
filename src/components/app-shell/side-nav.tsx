@@ -17,15 +17,28 @@ import {
   Building2,
   Briefcase,
   UserSquare2,
+  UserPlus,
+  LifeBuoy,
+  CalendarDays,
+  ListOrdered,
+  Megaphone,
+  Repeat,
+  Server,
+  Activity,
+  Lock,
+  Radar,
   FileText,
   Boxes,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SourceChipStack } from "@/components/ui/source-chip";
+import type { DataSourceKind } from "@/lib/fixtures";
 
 type NavLeaf = {
   href: string;
   label: string;
   icon?: React.ComponentType<{ className?: string }>;
+  sources?: DataSourceKind[];
 };
 
 type NavItem = {
@@ -57,18 +70,99 @@ const nav: NavItem[] = [
     icon: Users,
     group: "Agents",
     children: [
-      { href: "/records/contacts", label: "Contacts", icon: UserSquare2 },
-      { href: "/records/accounts", label: "Accounts", icon: Building2 },
+      {
+        href: "/records/contacts",
+        label: "Contacts",
+        icon: UserSquare2,
+        sources: ["salesforce", "hubspot", "marketo"],
+      },
+      {
+        href: "/records/accounts",
+        label: "Accounts",
+        icon: Building2,
+        sources: ["salesforce", "hubspot", "snowflake"],
+      },
       {
         href: "/records/opportunities",
         label: "Opportunities",
         icon: Briefcase,
+        sources: ["salesforce"],
+      },
+      {
+        href: "/records/leads",
+        label: "Leads",
+        icon: UserPlus,
+        sources: ["salesforce", "hubspot", "marketo"],
+      },
+      {
+        href: "/records/cases",
+        label: "Cases",
+        icon: LifeBuoy,
+        sources: ["salesforce", "zendesk"],
+      },
+      {
+        href: "/records/meetings",
+        label: "Meetings",
+        icon: CalendarDays,
+        sources: ["scheduling", "salesforce", "gong"],
+      },
+      {
+        href: "/records/sequence-enrollments",
+        label: "Sequences",
+        icon: ListOrdered,
+        sources: ["outreach", "marketo", "hubspot"],
+      },
+      {
+        href: "/records/campaigns",
+        label: "Campaigns",
+        icon: Megaphone,
+        sources: ["marketo", "salesforce", "hubspot"],
+      },
+      {
+        href: "/records/subscriptions",
+        label: "Subscriptions",
+        icon: Repeat,
+        sources: ["salesforce", "snowflake"],
       },
       {
         label: "Custom",
         children: [
-          { href: "/records/custom/quotes", label: "Quotes", icon: FileText },
-          { href: "/records/custom/orders", label: "Orders", icon: Boxes },
+          {
+            href: "/records/custom/quotes",
+            label: "Quotes",
+            icon: FileText,
+            sources: ["salesforce"],
+          },
+          {
+            href: "/records/custom/orders",
+            label: "Orders",
+            icon: Boxes,
+            sources: ["salesforce", "stripe"],
+          },
+          {
+            href: "/records/custom/workspaces",
+            label: "Workspaces",
+            icon: Server,
+            sources: ["snowflake", "segment"],
+          },
+          {
+            href: "/records/custom/product-usage",
+            label: "Product Usage",
+            icon: Activity,
+            sources: ["snowflake", "segment"],
+          },
+          {
+            href: "/records/custom/consents",
+            label: "Consents",
+            icon: Lock,
+            sources: ["onetrust", "hubspot", "marketo", "salesforce"],
+          },
+          {
+            href: "/records/custom/intent-signals",
+            label: "Intent Signals",
+            icon: Radar,
+            sources: ["zoominfo", "snowflake", "segment", "hubspot"],
+          },
         ],
       },
     ],
@@ -298,7 +392,12 @@ function NavChildLink({ child, active }: { child: NavLeaf; active: boolean }) {
             )}
           />
         )}
-        <span>{child.label}</span>
+        <span className="truncate">{child.label}</span>
+        {child.sources && child.sources.length > 0 && (
+          <span className="ml-auto pl-1 shrink-0">
+            <SourceChipStack sources={child.sources} size="xs" max={3} />
+          </span>
+        )}
       </Link>
     </li>
   );

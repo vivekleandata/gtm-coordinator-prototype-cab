@@ -3,7 +3,8 @@ import { Building2 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
 import { RecordsFilters } from "@/components/records-table";
-import { AGENTS_BY_ID, RECORDS } from "@/lib/fixtures";
+import { SourceMeta } from "@/components/ui/source-chip";
+import { AGENTS_BY_ID, RECORDS, RECORD_SET_SOURCES } from "@/lib/fixtures";
 
 type AccountRow = {
   company: string;
@@ -48,6 +49,7 @@ function rollupAccounts(): AccountRow[] {
 
 export default function AccountsPage() {
   const accounts = rollupAccounts();
+  const meta = RECORD_SET_SOURCES.accounts;
 
   return (
     <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
@@ -55,6 +57,7 @@ export default function AccountsPage() {
         eyebrow="Records · Accounts"
         title="Companies, rolled up from canonical contacts."
         description="Every record is grouped into the account it belongs to. Open opportunities, contact counts, and active agents — all in one place."
+        meta={<SourceMeta sources={meta.sources} primary={meta.primary} />}
       />
 
       <RecordsFilters placeholder="Search accounts by company name or domain…" />
