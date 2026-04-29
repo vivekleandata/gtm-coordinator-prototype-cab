@@ -82,6 +82,10 @@ This project mirrors the agentic-gtm-platform handoff cadence so you can iterate
 
 Project-scoped command definitions live in `.claude/commands/save-session.md` and `.claude/commands/resume-session.md`.
 
+## Stable snapshots
+
+- **CAB v1.0** — git tag `cab-v1.0` (commit `1758e7b`). Frozen at the customer-conference build: 21 agents, 15 record sets with multi-source identity chips, 1Mind branding. Live URL: [gtm-coordinator-cab-v1-0.vercel.app](https://gtm-coordinator-cab-v1-0.vercel.app). GitHub release: [cab-v1.0](https://github.com/vivekleandata/gtm-coordinator-prototype-cab/releases/tag/cab-v1.0). Refer back to this snapshot any time `main` has moved on and you need the conference-state prototype.
+
 ## Pairing with agp-app-v7
 
 This prototype lives alongside `../agentic-gtm-platform/prototypes/agp-app-v7`. They are shown together at the customer conference: AGP is the **workstation for humans**, gtm-coordinator is the **control plane for agents**. When a change here implies a corresponding change there (or vice versa), call it out in the session handoff so both projects' next-session Claudes notice.
