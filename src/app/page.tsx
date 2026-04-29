@@ -89,7 +89,7 @@ export default function CommandCenter() {
       </div>
 
       {/* Live stream (hero) */}
-      <LiveDecisionFeed limit={8} />
+      <LiveDecisionFeed limit={5} liveStream streamIntervalMs={3500} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Decision distribution */}

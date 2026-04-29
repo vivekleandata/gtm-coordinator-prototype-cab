@@ -1,31 +1,57 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { AGENTS_BY_ID, RECORDS_BY_ID, getDecisions } from "@/lib/fixtures";
 import type { PreflightEntry } from "@/lib/fixtures";
 import { DecisionBadge, ToolIcon } from "@/components/ui/primitives";
-import { formatRelative } from "@/lib/utils";
+import { cn, formatRelative } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
 export function LiveDecisionFeed({
   limit,
   showFooter = true,
+  liveStream = false,
+  streamIntervalMs = 3500,
 }: {
   limit?: number;
   showFooter?: boolean;
+  liveStream?: boolean;
+  streamIntervalMs?: number;
 }) {
-  const [tick, setTick] = useState(0);
+  // tick drives relative-time + fresh-row decay rerenders
+  const [, setTick] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const entries = useMemo(() => {
-    const all = getDecisions();
-    return limit ? all.slice(0, limit) : all;
-    // tick drives relative-time rerender
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick, limit]);
+  const pool = useMemo(() => getDecisions(), []);
+  const initial = useMemo(
+    () => (limit ? pool.slice(0, limit) : pool),
+    [pool, limit],
+  );
+
+  const [entries, setEntries] = useState<PreflightEntry[]>(initial);
+  const cursorRef = useRef(limit ?? pool.length);
+
+  useEffect(() => {
+    if (!liveStream || !limit || pool.length === 0) return;
+    const id = setInterval(() => {
+      setEntries((prev) => {
+        const source = pool[cursorRef.current % pool.length];
+        cursorRef.current += 1;
+        const arrival: PreflightEntry = {
+          ...source,
+          // unique key + fresh timestamp so motion treats it as a new row
+          id: `${source.id}-arr-${cursorRef.current}`,
+          tsMs: Date.now(),
+        };
+        return [arrival, ...prev].slice(0, limit);
+      });
+    }, streamIntervalMs);
+    return () => clearInterval(id);
+  }, [liveStream, limit, pool, streamIntervalMs]);
 
   return (
     <div className="product-card overflow-hidden">
@@ -46,9 +72,26 @@ export function LiveDecisionFeed({
         )}
       </div>
       <ul className="divide-y divide-border">
-        {entries.map((e) => (
-          <FeedRow key={e.id} entry={e} />
-        ))}
+        <AnimatePresence initial={false}>
+          {entries.map((e) => (
+            <motion.li
+              key={e.id}
+              layout
+              initial={{ opacity: 0, y: -18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0 }}
+              transition={{
+                layout: { duration: 0.35, ease: "easeOut" },
+                opacity: { duration: 0.25 },
+                y: { duration: 0.3, ease: "easeOut" },
+                height: { duration: 0.25 },
+              }}
+              className="overflow-hidden"
+            >
+              <FeedRow entry={e} />
+            </motion.li>
+          ))}
+        </AnimatePresence>
       </ul>
     </div>
   );
@@ -57,9 +100,15 @@ export function LiveDecisionFeed({
 function FeedRow({ entry }: { entry: PreflightEntry }) {
   const agent = AGENTS_BY_ID[entry.agentId];
   const record = RECORDS_BY_ID[entry.recordId];
+  const fresh = Date.now() - entry.tsMs < 1800;
 
   return (
-    <li className="px-4 py-2.5 flex items-center gap-3 hover:bg-ink-50/50 transition-colors">
+    <div
+      className={cn(
+        "px-4 py-2.5 flex items-center gap-3 transition-colors duration-700",
+        fresh ? "bg-brand-50/70" : "hover:bg-ink-50/50",
+      )}
+    >
       <div className="w-14 shrink-0 text-[11px] text-muted tabular">
         {formatRelative(entry.tsMs)}
       </div>
@@ -87,6 +136,6 @@ function FeedRow({ entry }: { entry: PreflightEntry }) {
       <div className="w-14 shrink-0 text-[11px] text-muted tabular text-right">
         {entry.latencyMs} ms
       </div>
-    </li>
+    </div>
   );
 }
