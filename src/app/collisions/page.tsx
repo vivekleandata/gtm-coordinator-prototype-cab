@@ -18,7 +18,22 @@ const typeTone = {
   "lock-contention": "brand",
   redundant: "neutral",
   cooldown: "amber",
+  chained: "brand",
+  "audit-only": "neutral",
+  "stale-state": "amber",
+  "policy-violation": "red",
 } as const;
+
+const typeLabel: Record<string, string> = {
+  overlap: "overlap",
+  "lock-contention": "lock-contention",
+  redundant: "redundant",
+  cooldown: "cooldown",
+  chained: "chained",
+  "audit-only": "audit-only",
+  "stale-state": "stale-state",
+  "policy-violation": "policy-violation",
+};
 
 export default function CollisionsPage() {
   return (
@@ -65,7 +80,7 @@ export default function CollisionsPage() {
             <div className="w-[100px]">Detected</div>
             <div className="flex-1">Record</div>
             <div className="w-[180px]">Conflict</div>
-            <div className="w-[100px]">Type</div>
+            <div className="w-[140px]">Type</div>
             <div className="w-[70px] text-right">Latency</div>
           </div>
           <ul>
@@ -76,6 +91,7 @@ export default function CollisionsPage() {
               const winner = c.winner
                 ? AGENTS_BY_ID[c.winner]?.name
                 : undefined;
+              const sameAgent = c.agentA === c.agentB;
               return (
                 <li
                   key={c.id}
@@ -94,13 +110,18 @@ export default function CollisionsPage() {
                     </div>
                     <div className="mt-1 text-[11.5px] text-ink-700">
                       → {c.resolution}
-                      {winner && (
+                      {winner && !sameAgent && (
                         <span className="text-emerald-700 font-medium">
                           {" "}
                           · winner: {winner}
                         </span>
                       )}
                     </div>
+                    {c.narrative && (
+                      <div className="mt-1.5 text-[11px] text-muted leading-relaxed">
+                        {c.narrative}
+                      </div>
+                    )}
                   </div>
                   <div className="w-[180px] flex items-center gap-1.5 shrink-0">
                     {a && (
@@ -113,20 +134,26 @@ export default function CollisionsPage() {
                     <span className="text-[11.5px] text-ink-700 truncate">
                       {a?.name}
                     </span>
-                    <span className="text-muted text-[10px]">vs</span>
-                    {b && (
-                      <ToolIcon
-                        color={b.color}
-                        initials={b.initials}
-                        size={18}
-                      />
+                    {!sameAgent && (
+                      <>
+                        <span className="text-muted text-[10px]">vs</span>
+                        {b && (
+                          <ToolIcon
+                            color={b.color}
+                            initials={b.initials}
+                            size={18}
+                          />
+                        )}
+                        <span className="text-[11.5px] text-ink-700 truncate">
+                          {b?.name}
+                        </span>
+                      </>
                     )}
-                    <span className="text-[11.5px] text-ink-700 truncate">
-                      {b?.name}
-                    </span>
                   </div>
-                  <div className="w-[100px] shrink-0">
-                    <StatusChip tone={typeTone[c.type]}>{c.type}</StatusChip>
+                  <div className="w-[140px] shrink-0">
+                    <StatusChip tone={typeTone[c.type]}>
+                      {typeLabel[c.type]}
+                    </StatusChip>
                   </div>
                   <div className="w-[70px] text-right text-[11.5px] text-ink-700 tabular shrink-0">
                     {c.latencyMs} ms

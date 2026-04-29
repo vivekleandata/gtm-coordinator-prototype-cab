@@ -9,7 +9,12 @@ import {
   StatusChip,
   ToolIcon,
 } from "@/components/ui/primitives";
-import { AGENTS_BY_ID, RECORDS_BY_ID, getDecisions } from "@/lib/fixtures";
+import {
+  AGENTS_BY_ID,
+  AGENT_KIND_LABELS,
+  RECORDS_BY_ID,
+  getDecisions,
+} from "@/lib/fixtures";
 import { formatNumber, formatRelative, pct } from "@/lib/utils";
 
 export default async function AgentDetail({
@@ -36,7 +41,7 @@ export default async function AgentDetail({
         <ToolIcon color={agent.color} initials={agent.initials} size={48} />
         <div className="flex-1">
           <PageHeader
-            eyebrow={`${agent.vendor} · ${agent.kind}`}
+            eyebrow={`${agent.vendor} · ${AGENT_KIND_LABELS[agent.kind]}`}
             title={agent.name}
             meta={`Registered ${agent.registeredAt} · API key ${agent.apiKeyPreview}`}
             actions={

@@ -114,7 +114,7 @@ export default function CommandCenter() {
         <Card className="p-5">
           <Section
             title="Agent health"
-            description="12 agents across 7 vendors"
+            description={`${AGENTS.length} agents across ${new Set(AGENTS.map((a) => a.vendor)).size} vendors`}
             action={
               <Link
                 href="/directory/agents"
