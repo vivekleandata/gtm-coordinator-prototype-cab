@@ -4,10 +4,12 @@ import {
   RecordsFilters,
   EmptyRecordsState,
 } from "@/components/records-table";
-import { RECORDS } from "@/lib/fixtures";
+import { RECORDS, RECORD_SET_SOURCES } from "@/lib/fixtures";
+import { SourceMeta } from "@/components/ui/source-chip";
 
 export default function OpportunitiesPage() {
   const opps = RECORDS.filter((r) => r.openOpp);
+  const meta = RECORD_SET_SOURCES.opportunities;
 
   return (
     <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
@@ -15,6 +17,7 @@ export default function OpportunitiesPage() {
         eyebrow="Records · Opportunities"
         title="Open opportunities the Coordinator is watching."
         description="Every contact tied to a live deal — with stage, amount, owner, and the agents currently active on the record."
+        meta={<SourceMeta sources={meta.sources} primary={meta.primary} />}
       />
 
       <RecordsFilters placeholder="Search opportunities by record, owner, or stage…" />

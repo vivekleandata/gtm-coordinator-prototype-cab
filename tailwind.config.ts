@@ -47,7 +47,7 @@ const config: Config = {
           "11x": "#111111",
           warmly: "#f59e0b",
           clay: "#dc2626",
-          onemind: "#7c3aed",
+          "1mind": "#7c3aed",
           zoominfo: "#0ea5e9",
         },
         decision: {

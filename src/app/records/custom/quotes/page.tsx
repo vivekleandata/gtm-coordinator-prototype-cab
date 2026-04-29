@@ -2,7 +2,13 @@ import { FileText } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, StatusChip, ToolIcon } from "@/components/ui/primitives";
 import { RecordsFilters } from "@/components/records-table";
-import { AGENTS_BY_ID, QUOTES, type Quote } from "@/lib/fixtures";
+import { SourceMeta } from "@/components/ui/source-chip";
+import {
+  AGENTS_BY_ID,
+  QUOTES,
+  RECORD_SET_SOURCES,
+  type Quote,
+} from "@/lib/fixtures";
 
 const stageTone: Record<Quote["stage"], "neutral" | "amber" | "green"> = {
   Draft: "neutral",
@@ -13,12 +19,14 @@ const stageTone: Record<Quote["stage"], "neutral" | "amber" | "green"> = {
 };
 
 export default function QuotesPage() {
+  const meta = RECORD_SET_SOURCES.quotes;
   return (
     <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
       <PageHeader
         eyebrow="Records · Custom · Quotes"
         title="Quotes the Coordinator is watching."
         description="Custom CRM objects flow into the same observability surface as standard ones. Listen for stage changes, route them through preflight, and resolve agent collisions on revenue artifacts."
+        meta={<SourceMeta sources={meta.sources} primary={meta.primary} />}
       />
 
       <RecordsFilters placeholder="Search quotes by number, account, or owner…" />

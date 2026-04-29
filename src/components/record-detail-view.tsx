@@ -717,7 +717,7 @@ function SlackSidebar({ ownerName }: { ownerName: string }) {
             initials: "SF",
             color: "#00a1e0",
           },
-          { app: true, name: "OneMind", initials: "OM", color: "#7c3aed" },
+          { app: true, name: "1Mind", initials: "1M", color: "#7c3aed" },
         ]}
       />
 

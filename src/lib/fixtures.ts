@@ -172,9 +172,9 @@ export const AGENTS: Agent[] = [
     initials: "Cl",
   },
   {
-    id: "agt_onemind_sched",
-    name: "OneMind Scheduler",
-    vendor: "OneMind",
+    id: "agt_1mind_sched",
+    name: "1Mind Scheduler",
+    vendor: "1Mind",
     kind: "scheduling",
     status: "active",
     declaredActions: ["schedule_meeting", "reschedule"],
@@ -184,7 +184,7 @@ export const AGENTS: Agent[] = [
     preflights24h: 218,
     goRate: 0.91,
     color: "#7c3aed",
-    initials: "OM",
+    initials: "1M",
   },
   {
     id: "agt_zi_signals",
@@ -502,7 +502,7 @@ export const RECORDS: Record[] = [
     conflicts7d: 8,
     touches7d: 11,
     budgetCap: 14,
-    agentsActive: ["agt_11x_alice", "agt_warmly_visitor", "agt_onemind_sched"],
+    agentsActive: ["agt_11x_alice", "agt_warmly_visitor", "agt_1mind_sched"],
   },
   {
     id: "rec_john_startup",
@@ -557,7 +557,7 @@ export const RECORDS: Record[] = [
     conflicts7d: 4,
     touches7d: 5,
     budgetCap: 8,
-    agentsActive: ["agt_onemind_sched", "agt_zi_signals"],
+    agentsActive: ["agt_1mind_sched", "agt_zi_signals"],
   },
   {
     id: "rec_mike_company",
@@ -1068,14 +1068,14 @@ const raw: RawEntry[] = [
     action: "schedule_meeting",
     recordId: "rec_mike_company",
     decision: "WAIT",
-    reason: "OneMind holds active booking lock (TTL 4m)",
+    reason: "1Mind holds active booking lock (TTL 4m)",
     latencyMs: 156,
     rulesetVersion: "v2026.04.1",
   },
   {
     id: "req_2H9A",
     secondsAgo: 89,
-    agentId: "agt_onemind_sched",
+    agentId: "agt_1mind_sched",
     action: "schedule_meeting",
     recordId: "rec_mike_company",
     decision: "GO",
@@ -1150,7 +1150,7 @@ const raw: RawEntry[] = [
     action: "send_email",
     recordId: "rec_mike_company",
     decision: "WAIT",
-    reason: "OneMind meeting pending — 24h quiet-hold policy",
+    reason: "1Mind meeting pending — 24h quiet-hold policy",
     latencyMs: 163,
     rulesetVersion: "v2026.04.1",
   },
@@ -1858,7 +1858,7 @@ export const SIMULATION_RESULTS: { [policyId: string]: SimulationResult } = {
       {
         record: "Convex · Stark Holdings",
         owner: "Sarah Lee",
-        agent: "OneMind",
+        agent: "1Mind",
         from: "GO",
         to: "REDIRECT",
         reason: "Tier 1 + Negotiation stage → owner DM",
@@ -1950,7 +1950,7 @@ export const SIMULATION_RESULTS: { [policyId: string]: SimulationResult } = {
       {
         record: "Convex · Helix Bio",
         owner: "Priya Shah",
-        agent: "OneMind",
+        agent: "1Mind",
         from: "GO",
         to: "WAIT",
         reason: "Booking lock held by Qualified (180s remaining)",
@@ -2044,10 +2044,10 @@ export const COLLISIONS: Collision[] = [
     detectedAt: "6 min ago",
     recordId: "rec_mike_company",
     agentA: "agt_11x_alice",
-    agentB: "agt_onemind_sched",
+    agentB: "agt_1mind_sched",
     type: "lock-contention",
-    resolution: "OneMind holds booking lock → 11x WAIT",
-    winner: "agt_onemind_sched",
+    resolution: "1Mind holds booking lock → 11x WAIT",
+    winner: "agt_1mind_sched",
     latencyMs: 6,
   },
   {
@@ -2201,7 +2201,7 @@ export const MEETINGS: Meeting[] = [
     id: "mtg_1",
     recordName: "Jane Doe",
     company: "BigCorp",
-    bookedBy: "OneMind Scheduler",
+    bookedBy: "1Mind Scheduler",
     assignedTo: "Mike Chen",
     when: "Tue 2:00 PM",
     duration: "30m",
@@ -2212,7 +2212,7 @@ export const MEETINGS: Meeting[] = [
     id: "mtg_2",
     recordName: "Mike Rodriguez",
     company: "Company Inc",
-    bookedBy: "OneMind Scheduler",
+    bookedBy: "1Mind Scheduler",
     assignedTo: "James Park",
     when: "Tue 3:30 PM",
     duration: "45m",
@@ -2245,7 +2245,7 @@ export const MEETINGS: Meeting[] = [
     id: "mtg_5",
     recordName: "Lena Okafor",
     company: "Atlas Tech",
-    bookedBy: "OneMind Scheduler",
+    bookedBy: "1Mind Scheduler",
     assignedTo: "Lisa Park",
     when: "Thu 10:00 AM",
     duration: "60m",
@@ -2289,7 +2289,7 @@ export const ATTRIBUTION: AgentAttribution[] = [
     avgCycleDays: 42,
   },
   {
-    agentId: "agt_onemind_sched",
+    agentId: "agt_1mind_sched",
     meetings: 34,
     pipelineByMethod: {
       "first-touch": 410, // schedulers rarely first-touch
@@ -2594,7 +2594,7 @@ export const AGENT_ECONOMICS: AgentEconomics[] = [
     pipelinePerDollar: 117,
   },
   {
-    agentId: "agt_onemind_sched",
+    agentId: "agt_1mind_sched",
     monthlyCostK: 6,
     oppsCreated30d: 22,
     costPerOppK: 0.273,
@@ -2636,7 +2636,7 @@ export const OUTCOMES = [
     company: "Globex Systems",
     stage: "Closed Won",
     amount: "$240K",
-    influencedBy: ["agt_11x_alice", "agt_onemind_sched"],
+    influencedBy: ["agt_11x_alice", "agt_1mind_sched"],
     days: 3,
   },
   {
@@ -2650,7 +2650,7 @@ export const OUTCOMES = [
     company: "Stark Industries",
     stage: "Negotiation",
     amount: "$480K",
-    influencedBy: ["agt_11x_alice", "agt_clay_enrich", "agt_onemind_sched"],
+    influencedBy: ["agt_11x_alice", "agt_clay_enrich", "agt_1mind_sched"],
     days: 12,
   },
   {
@@ -2728,14 +2728,14 @@ export const PARTNERS: Partner[] = [
     initials: "Cl",
   },
   {
-    name: "OneMind",
-    slug: "onemind",
+    name: "1Mind",
+    slug: "1mind",
     status: "connected",
     category: "Scheduling",
     description: "Agentic meeting scheduling across round-robin pools.",
     agentsRegistered: 1,
     logoColor: "#7c3aed",
-    initials: "OM",
+    initials: "1M",
   },
   {
     name: "ZoomInfo",
@@ -3064,17 +3064,17 @@ export const OWNER_SLACK_MESSAGES_BY_RECORD: {
     },
     {
       id: "msg_jane_04",
-      decisionId: "req_jane_onemind_dbl",
+      decisionId: "req_jane_1mind_dbl",
       recordId: "rec_jane_bigcorp",
-      agentId: "agt_onemind_sched",
+      agentId: "agt_1mind_sched",
       decision: "WAIT",
       channel: "meeting",
       policyId: "pol_meeting_exclusive",
       policyLabel: "Meeting Booking Exclusivity",
       secondsAgo: 5400,
       absoluteTime: "Today at 12:48 PM",
-      headline: "OneMind almost double-booked Jane. Booking lock held it.",
-      body: "Qualified Piper had a 4-min booking lock active when OneMind tried to schedule. OneMind is queued — if Piper drops the lock, OneMind picks it up.",
+      headline: "1Mind almost double-booked Jane. Booking lock held it.",
+      body: "Qualified Piper had a 4-min booking lock active when 1Mind tried to schedule. 1Mind is queued — if Piper drops the lock, 1Mind picks it up.",
       actions: ["view-record"],
       resolved: "held",
     },
@@ -3107,8 +3107,8 @@ export const OWNER_SLACK_MESSAGES_BY_RECORD: {
       policyLabel: "Meeting Booking Exclusivity",
       secondsAgo: 63,
       absoluteTime: "Today at 2:20 PM",
-      headline: "11x Alice tried to schedule with Mike — OneMind has the lock.",
-      body: "OneMind is mid-booking flow with the round-robin pool (TTL 4m). Holding 11x until OneMind drops the lock or it expires.",
+      headline: "11x Alice tried to schedule with Mike — 1Mind has the lock.",
+      body: "1Mind is mid-booking flow with the round-robin pool (TTL 4m). Holding 11x until 1Mind drops the lock or it expires.",
       actions: ["view-record"],
       unread: true,
     },
@@ -3422,7 +3422,8 @@ export type DataSourceKind =
   | "outreach"
   | "gong"
   | "scheduling"
-  | "onetrust";
+  | "onetrust"
+  | "zoominfo";
 
 export type DataSource = {
   id: string;
@@ -3555,6 +3556,16 @@ export const DATA_SOURCES: DataSource[] = [
     color: "#52bd95",
     status: "connected",
     lastSyncedAt: "21s ago",
+  },
+  {
+    id: "src_zoominfo",
+    kind: "zoominfo",
+    label: "ZoomInfo · Intent + enrichment",
+    vendor: "ZoomInfo",
+    initials: "Zi",
+    color: "#0ea5e9",
+    status: "connected",
+    lastSyncedAt: "1 min ago",
   },
 ];
 
@@ -4221,7 +4232,7 @@ export const REGISTERED_ACTIONS: RegisteredAction[] = [
     id: "act_sched_meeting_booked",
     name: "Meeting booked",
     description:
-      "Meeting created in any scheduling tool — BookIt, Chili Piper, OneMind, or a calendar plugin. Drives 24h quiet hold on outbound.",
+      "Meeting created in any scheduling tool — BookIt, Chili Piper, 1Mind, or a calendar plugin. Drives 24h quiet hold on outbound.",
     sourceId: "src_scheduling",
     object: "Meeting",
     field: "Status",
@@ -4777,6 +4788,1167 @@ export function getDataChanges(nowMs: number = Date.now()): DataChangeEntry[] {
     tsMs: nowMs - e.secondsAgo * 1000,
   }));
 }
+
+// ---------------------------------------------------------------------------
+// Record sets — sources per per-object page
+
+export type RecordSetKey =
+  | "contacts"
+  | "accounts"
+  | "opportunities"
+  | "leads"
+  | "cases"
+  | "meetings"
+  | "sequence-enrollments"
+  | "campaigns"
+  | "subscriptions"
+  | "quotes"
+  | "orders"
+  | "workspaces"
+  | "product-usage"
+  | "consents"
+  | "intent-signals";
+
+export const RECORD_SET_SOURCES: {
+  [K in RecordSetKey]: { primary: DataSourceKind; sources: DataSourceKind[] };
+} = {
+  contacts: {
+    primary: "salesforce",
+    sources: ["salesforce", "hubspot", "marketo"],
+  },
+  accounts: {
+    primary: "salesforce",
+    sources: ["salesforce", "hubspot", "snowflake"],
+  },
+  opportunities: { primary: "salesforce", sources: ["salesforce"] },
+  leads: {
+    primary: "salesforce",
+    sources: ["salesforce", "hubspot", "marketo"],
+  },
+  cases: { primary: "salesforce", sources: ["salesforce", "zendesk"] },
+  meetings: {
+    primary: "scheduling",
+    sources: ["scheduling", "salesforce", "gong"],
+  },
+  "sequence-enrollments": {
+    primary: "outreach",
+    sources: ["outreach", "marketo", "hubspot"],
+  },
+  campaigns: {
+    primary: "marketo",
+    sources: ["marketo", "salesforce", "hubspot"],
+  },
+  subscriptions: {
+    primary: "salesforce",
+    sources: ["salesforce", "snowflake"],
+  },
+  quotes: { primary: "salesforce", sources: ["salesforce"] },
+  orders: { primary: "salesforce", sources: ["salesforce", "stripe"] },
+  workspaces: { primary: "snowflake", sources: ["snowflake", "segment"] },
+  "product-usage": {
+    primary: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  consents: {
+    primary: "onetrust",
+    sources: ["onetrust", "hubspot", "marketo", "salesforce"],
+  },
+  "intent-signals": {
+    primary: "zoominfo",
+    sources: ["zoominfo", "snowflake", "segment", "hubspot"],
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Leads (pre-conversion person records)
+
+export type Lead = {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  title: string;
+  status: "New" | "Working" | "Nurture" | "MQL" | "Disqualified";
+  score: number;
+  ownerName: string;
+  source: DataSourceKind; // primary system of record
+  sources: DataSourceKind[]; // all systems this lead exists in
+  createdAt: string;
+  lastTouched: string;
+  agentsActive: string[];
+};
+
+export const LEADS: Lead[] = [
+  {
+    id: "lead_01",
+    name: "Aiden Park",
+    email: "aiden@northstar.io",
+    company: "NorthStar IO",
+    title: "Director of Demand Gen",
+    status: "MQL",
+    score: 87,
+    ownerName: "Sarah Johnson",
+    source: "marketo",
+    sources: ["marketo", "salesforce", "hubspot"],
+    createdAt: "2 days ago",
+    lastTouched: "9 min ago",
+    agentsActive: ["agt_11x_alice", "agt_marketo_engage"],
+  },
+  {
+    id: "lead_02",
+    name: "Priya Desai",
+    email: "priya@arcwave.com",
+    company: "Arcwave",
+    title: "VP Marketing",
+    status: "Working",
+    score: 72,
+    ownerName: "James Park",
+    source: "salesforce",
+    sources: ["salesforce", "hubspot"],
+    createdAt: "1 day ago",
+    lastTouched: "23 min ago",
+    agentsActive: ["agt_11x_alice", "agt_artisan_ava"],
+  },
+  {
+    id: "lead_03",
+    name: "Marcus Lee",
+    email: "marcus@brighttrail.io",
+    company: "Brighttrail",
+    title: "Head of Sales",
+    status: "New",
+    score: 64,
+    ownerName: "Tom Anderson",
+    source: "hubspot",
+    sources: ["hubspot", "salesforce"],
+    createdAt: "4 hours ago",
+    lastTouched: "31 min ago",
+    agentsActive: ["agt_warmly_visitor"],
+  },
+  {
+    id: "lead_04",
+    name: "Hannah Kim",
+    email: "hannah@civicstack.com",
+    company: "CivicStack",
+    title: "Operations Lead",
+    status: "Nurture",
+    score: 41,
+    ownerName: "Marketing Ops",
+    source: "marketo",
+    sources: ["marketo", "hubspot"],
+    createdAt: "6 days ago",
+    lastTouched: "2 hours ago",
+    agentsActive: ["agt_marketo_engage"],
+  },
+  {
+    id: "lead_05",
+    name: "Diego Alvarez",
+    email: "diego@fluxlabs.io",
+    company: "FluxLabs",
+    title: "RevOps Manager",
+    status: "MQL",
+    score: 78,
+    ownerName: "Priya Nair",
+    source: "salesforce",
+    sources: ["salesforce", "marketo"],
+    createdAt: "12 hours ago",
+    lastTouched: "47 min ago",
+    agentsActive: ["agt_11x_alice", "agt_clay_enrich"],
+  },
+  {
+    id: "lead_06",
+    name: "Yuki Tanaka",
+    email: "yuki@orbitalops.jp",
+    company: "Orbital Ops",
+    title: "Director of GTM",
+    status: "Working",
+    score: 69,
+    ownerName: "Mike Chen",
+    source: "salesforce",
+    sources: ["salesforce", "hubspot", "marketo"],
+    createdAt: "3 days ago",
+    lastTouched: "15 min ago",
+    agentsActive: ["agt_artisan_ava"],
+  },
+  {
+    id: "lead_07",
+    name: "Rebecca Foster",
+    email: "rebecca@sablestack.com",
+    company: "SableStack",
+    title: "VP Revenue",
+    status: "Disqualified",
+    score: 22,
+    ownerName: "—",
+    source: "hubspot",
+    sources: ["hubspot"],
+    createdAt: "9 days ago",
+    lastTouched: "5 days ago",
+    agentsActive: [],
+  },
+  {
+    id: "lead_08",
+    name: "Omar Haddad",
+    email: "omar@meridianlabs.io",
+    company: "Meridian Labs",
+    title: "Head of Demand",
+    status: "MQL",
+    score: 81,
+    ownerName: "Lisa Park",
+    source: "marketo",
+    sources: ["marketo", "salesforce"],
+    createdAt: "1 day ago",
+    lastTouched: "11 min ago",
+    agentsActive: ["agt_11x_alice", "agt_marketo_engage", "agt_artisan_ava"],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Cases (support tickets)
+
+export type SupportCase = {
+  id: string;
+  subject: string;
+  account: string;
+  contact: string;
+  priority: "P1" | "P2" | "P3" | "P4";
+  status: "New" | "Working" | "Waiting on customer" | "Escalated" | "Resolved";
+  ownerName: string;
+  source: DataSourceKind;
+  openedAt: string;
+  lastActivity: string;
+  blocksOutbound: boolean;
+};
+
+export const CASES: SupportCase[] = [
+  {
+    id: "case_01",
+    subject: "Round-robin pool not assigning EMEA leads",
+    account: "BigCorp",
+    contact: "Jane Doe",
+    priority: "P1",
+    status: "Escalated",
+    ownerName: "Maya Singh",
+    source: "salesforce",
+    openedAt: "4 hours ago",
+    lastActivity: "12 min ago",
+    blocksOutbound: true,
+  },
+  {
+    id: "case_02",
+    subject: "Connector to Marketo dropping form-fills",
+    account: "Atlas Tech",
+    contact: "Lena Okafor",
+    priority: "P2",
+    status: "Working",
+    ownerName: "Daniel Reyes",
+    source: "salesforce",
+    openedAt: "1 day ago",
+    lastActivity: "32 min ago",
+    blocksOutbound: true,
+  },
+  {
+    id: "case_03",
+    subject: "Webhook signature mismatch on prod",
+    account: "Tech Co",
+    contact: "Emma Walsh",
+    priority: "P2",
+    status: "Waiting on customer",
+    ownerName: "Daniel Reyes",
+    source: "zendesk",
+    openedAt: "2 days ago",
+    lastActivity: "3 hours ago",
+    blocksOutbound: false,
+  },
+  {
+    id: "case_04",
+    subject: "Quote PDF not rendering in Asia region",
+    account: "StartupIO",
+    contact: "John Smith",
+    priority: "P3",
+    status: "New",
+    ownerName: "Maya Singh",
+    source: "zendesk",
+    openedAt: "6 hours ago",
+    lastActivity: "1 hour ago",
+    blocksOutbound: false,
+  },
+  {
+    id: "case_05",
+    subject: "How to migrate Outreach sequences",
+    account: "Enterprise Co",
+    contact: "Sarah Williams",
+    priority: "P4",
+    status: "Resolved",
+    ownerName: "Daniel Reyes",
+    source: "zendesk",
+    openedAt: "5 days ago",
+    lastActivity: "2 days ago",
+    blocksOutbound: false,
+  },
+  {
+    id: "case_06",
+    subject: "Slack DMs missing recipient context",
+    account: "Company Inc",
+    contact: "Mike Rodriguez",
+    priority: "P3",
+    status: "Working",
+    ownerName: "Maya Singh",
+    source: "salesforce",
+    openedAt: "18 hours ago",
+    lastActivity: "44 min ago",
+    blocksOutbound: false,
+  },
+  {
+    id: "case_07",
+    subject: "Stage gate firing twice on closed-won",
+    account: "BigCorp",
+    contact: "Jane Doe",
+    priority: "P2",
+    status: "Working",
+    ownerName: "Daniel Reyes",
+    source: "salesforce",
+    openedAt: "9 hours ago",
+    lastActivity: "20 min ago",
+    blocksOutbound: false,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Sequence enrollments
+
+export type SequenceEnrollment = {
+  id: string;
+  contact: string;
+  account: string;
+  sequence: string;
+  step: string;
+  status: "Active" | "Paused" | "Completed" | "Out of office" | "Replied";
+  enrolledBy: string; // agent id or rep name
+  enrolledByKind: "agent" | "rep";
+  source: DataSourceKind;
+  enrolledAt: string;
+  lastSendAt: string;
+  collisions7d: number;
+};
+
+export const SEQUENCE_ENROLLMENTS: SequenceEnrollment[] = [
+  {
+    id: "enr_01",
+    contact: "Jane Doe",
+    account: "BigCorp",
+    sequence: "Enterprise · Negotiation push",
+    step: "Step 4 of 6",
+    status: "Active",
+    enrolledBy: "agt_11x_alice",
+    enrolledByKind: "agent",
+    source: "outreach",
+    enrolledAt: "Yesterday 4:12 PM",
+    lastSendAt: "9 min ago",
+    collisions7d: 3,
+  },
+  {
+    id: "enr_02",
+    contact: "John Smith",
+    account: "StartupIO",
+    sequence: "MQL · 14-day nurture",
+    step: "Step 2 of 8",
+    status: "Active",
+    enrolledBy: "agt_marketo_engage",
+    enrolledByKind: "agent",
+    source: "marketo",
+    enrolledAt: "3 days ago",
+    lastSendAt: "21 min ago",
+    collisions7d: 1,
+  },
+  {
+    id: "enr_03",
+    contact: "Sarah Williams",
+    account: "Enterprise Co",
+    sequence: "Discovery · Multi-thread",
+    step: "Step 3 of 5",
+    status: "Replied",
+    enrolledBy: "Tom Anderson",
+    enrolledByKind: "rep",
+    source: "outreach",
+    enrolledAt: "5 days ago",
+    lastSendAt: "Yesterday",
+    collisions7d: 0,
+  },
+  {
+    id: "enr_04",
+    contact: "Emma Walsh",
+    account: "Tech Co",
+    sequence: "EMEA · MQL warmup",
+    step: "Step 1 of 7",
+    status: "Active",
+    enrolledBy: "agt_artisan_ava",
+    enrolledByKind: "agent",
+    source: "outreach",
+    enrolledAt: "Today 10:04 AM",
+    lastSendAt: "47 min ago",
+    collisions7d: 2,
+  },
+  {
+    id: "enr_05",
+    contact: "Aiden Park",
+    account: "NorthStar IO",
+    sequence: "Demand · Whitepaper drip",
+    step: "Step 5 of 6",
+    status: "Active",
+    enrolledBy: "agt_marketo_engage",
+    enrolledByKind: "agent",
+    source: "marketo",
+    enrolledAt: "8 days ago",
+    lastSendAt: "2 hours ago",
+    collisions7d: 1,
+  },
+  {
+    id: "enr_06",
+    contact: "Mike Rodriguez",
+    account: "Company Inc",
+    sequence: "Renewal · 90-day check-in",
+    step: "Step 2 of 4",
+    status: "Paused",
+    enrolledBy: "agt_gainsight_cs",
+    enrolledByKind: "agent",
+    source: "hubspot",
+    enrolledAt: "1 week ago",
+    lastSendAt: "3 days ago",
+    collisions7d: 0,
+  },
+  {
+    id: "enr_07",
+    contact: "Diego Alvarez",
+    account: "FluxLabs",
+    sequence: "RevOps · Pricing-page follow-up",
+    step: "Step 1 of 3",
+    status: "Active",
+    enrolledBy: "agt_11x_alice",
+    enrolledByKind: "agent",
+    source: "outreach",
+    enrolledAt: "Today 11:46 AM",
+    lastSendAt: "6 min ago",
+    collisions7d: 4,
+  },
+  {
+    id: "enr_08",
+    contact: "Omar Haddad",
+    account: "Meridian Labs",
+    sequence: "Demand · MQL handoff",
+    step: "Step 6 of 8",
+    status: "Out of office",
+    enrolledBy: "Sarah Johnson",
+    enrolledByKind: "rep",
+    source: "outreach",
+    enrolledAt: "4 days ago",
+    lastSendAt: "Yesterday",
+    collisions7d: 0,
+  },
+  {
+    id: "enr_09",
+    contact: "Yuki Tanaka",
+    account: "Orbital Ops",
+    sequence: "APAC · 7-day intro",
+    step: "Step 7 of 7",
+    status: "Completed",
+    enrolledBy: "agt_artisan_ava",
+    enrolledByKind: "agent",
+    source: "outreach",
+    enrolledAt: "9 days ago",
+    lastSendAt: "Today 6:30 AM",
+    collisions7d: 1,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Campaigns
+
+export type Campaign = {
+  id: string;
+  name: string;
+  type:
+    | "Email Nurture"
+    | "Webinar"
+    | "Field Event"
+    | "Paid Social"
+    | "ABM Display"
+    | "Newsletter";
+  status: "Active" | "Scheduled" | "Paused" | "Completed";
+  members: number;
+  channel: string;
+  ownerName: string;
+  source: DataSourceKind;
+  lastSendAt: string;
+  budgetExposure: number; // % of audience near comm-budget cap
+};
+
+export const CAMPAIGNS: Campaign[] = [
+  {
+    id: "camp_01",
+    name: "Q2 Pricing-page nurture",
+    type: "Email Nurture",
+    status: "Active",
+    members: 1247,
+    channel: "Email",
+    ownerName: "Demand Gen",
+    source: "marketo",
+    lastSendAt: "6 min ago",
+    budgetExposure: 18,
+  },
+  {
+    id: "camp_02",
+    name: "RevOps Forum SF · April",
+    type: "Field Event",
+    status: "Scheduled",
+    members: 84,
+    channel: "Event + Email",
+    ownerName: "Field Marketing",
+    source: "salesforce",
+    lastSendAt: "Yesterday",
+    budgetExposure: 4,
+  },
+  {
+    id: "camp_03",
+    name: "MQL → SQL handoff drip",
+    type: "Email Nurture",
+    status: "Active",
+    members: 612,
+    channel: "Email",
+    ownerName: "Demand Gen",
+    source: "marketo",
+    lastSendAt: "32 min ago",
+    budgetExposure: 27,
+  },
+  {
+    id: "camp_04",
+    name: "Tier-1 ABM display · NA East",
+    type: "ABM Display",
+    status: "Active",
+    members: 36,
+    channel: "Display",
+    ownerName: "ABM",
+    source: "hubspot",
+    lastSendAt: "—",
+    budgetExposure: 11,
+  },
+  {
+    id: "camp_05",
+    name: "Webinar · Agent governance 101",
+    type: "Webinar",
+    status: "Completed",
+    members: 421,
+    channel: "Webinar + Email",
+    ownerName: "Product Marketing",
+    source: "marketo",
+    lastSendAt: "5 days ago",
+    budgetExposure: 0,
+  },
+  {
+    id: "camp_06",
+    name: "Customer monthly newsletter",
+    type: "Newsletter",
+    status: "Active",
+    members: 2890,
+    channel: "Email",
+    ownerName: "Lifecycle",
+    source: "marketo",
+    lastSendAt: "Today 7:00 AM",
+    budgetExposure: 9,
+  },
+  {
+    id: "camp_07",
+    name: "LinkedIn retargeting · pricing visitors",
+    type: "Paid Social",
+    status: "Active",
+    members: 188,
+    channel: "Paid Social",
+    ownerName: "Performance",
+    source: "hubspot",
+    lastSendAt: "—",
+    budgetExposure: 6,
+  },
+  {
+    id: "camp_08",
+    name: "Q1 wrap · churn-risk re-engagement",
+    type: "Email Nurture",
+    status: "Paused",
+    members: 73,
+    channel: "Email",
+    ownerName: "CS Marketing",
+    source: "salesforce",
+    lastSendAt: "8 days ago",
+    budgetExposure: 0,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Subscriptions
+
+export type Subscription = {
+  id: string;
+  account: string;
+  plan: string;
+  arr: string;
+  status: "Active" | "Renewing" | "At risk" | "Expired" | "Cancelled";
+  termStart: string;
+  termEnd: string;
+  csmName: string;
+  health: "Healthy" | "Watch" | "At risk" | "Critical";
+  source: DataSourceKind;
+  sources: DataSourceKind[];
+  daysToRenewal: number | null;
+};
+
+export const SUBSCRIPTIONS: Subscription[] = [
+  {
+    id: "sub_01",
+    account: "BigCorp",
+    plan: "Enterprise · Annual",
+    arr: "$420K",
+    status: "Active",
+    termStart: "2025-08-01",
+    termEnd: "2026-07-31",
+    csmName: "Lisa Park",
+    health: "Healthy",
+    source: "salesforce",
+    sources: ["salesforce", "snowflake"],
+    daysToRenewal: 93,
+  },
+  {
+    id: "sub_02",
+    account: "Enterprise Co",
+    plan: "Enterprise · Annual",
+    arr: "$285K",
+    status: "Renewing",
+    termStart: "2025-05-15",
+    termEnd: "2026-05-14",
+    csmName: "Lisa Park",
+    health: "Watch",
+    source: "salesforce",
+    sources: ["salesforce", "snowflake"],
+    daysToRenewal: 16,
+  },
+  {
+    id: "sub_03",
+    account: "Atlas Tech",
+    plan: "Growth · Annual",
+    arr: "$96K",
+    status: "At risk",
+    termStart: "2025-09-01",
+    termEnd: "2026-08-31",
+    csmName: "Priya Nair",
+    health: "At risk",
+    source: "salesforce",
+    sources: ["salesforce", "snowflake"],
+    daysToRenewal: 124,
+  },
+  {
+    id: "sub_04",
+    account: "Tech Co",
+    plan: "Growth · Annual",
+    arr: "$58K",
+    status: "Active",
+    termStart: "2026-01-12",
+    termEnd: "2027-01-11",
+    csmName: "Priya Nair",
+    health: "Healthy",
+    source: "salesforce",
+    sources: ["salesforce", "snowflake"],
+    daysToRenewal: 257,
+  },
+  {
+    id: "sub_05",
+    account: "Company Inc",
+    plan: "Growth · Monthly",
+    arr: "$42K",
+    status: "Active",
+    termStart: "2026-03-01",
+    termEnd: "2026-04-30",
+    csmName: "Maya Singh",
+    health: "Watch",
+    source: "salesforce",
+    sources: ["salesforce", "snowflake"],
+    daysToRenewal: 1,
+  },
+  {
+    id: "sub_06",
+    account: "Orbital Ops",
+    plan: "Enterprise · Annual",
+    arr: "$310K",
+    status: "Active",
+    termStart: "2025-11-01",
+    termEnd: "2026-10-31",
+    csmName: "Lisa Park",
+    health: "Healthy",
+    source: "salesforce",
+    sources: ["salesforce", "snowflake"],
+    daysToRenewal: 185,
+  },
+  {
+    id: "sub_07",
+    account: "FluxLabs",
+    plan: "Growth · Annual",
+    arr: "$74K",
+    status: "Cancelled",
+    termStart: "2024-09-15",
+    termEnd: "2025-09-14",
+    csmName: "—",
+    health: "Critical",
+    source: "salesforce",
+    sources: ["salesforce"],
+    daysToRenewal: null,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Workspaces (product tenants)
+
+export type Workspace = {
+  id: string;
+  name: string;
+  account: string;
+  plan: string;
+  seats: number;
+  mau: number;
+  createdAt: string;
+  status: "Active" | "Trial" | "Inactive" | "Suspended";
+  source: DataSourceKind;
+  sources: DataSourceKind[];
+};
+
+export const WORKSPACES: Workspace[] = [
+  {
+    id: "ws_01",
+    name: "bigcorp-prod",
+    account: "BigCorp",
+    plan: "Enterprise",
+    seats: 248,
+    mau: 211,
+    createdAt: "2024-08-12",
+    status: "Active",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  {
+    id: "ws_02",
+    name: "bigcorp-staging",
+    account: "BigCorp",
+    plan: "Enterprise",
+    seats: 32,
+    mau: 14,
+    createdAt: "2024-09-01",
+    status: "Active",
+    source: "snowflake",
+    sources: ["snowflake"],
+  },
+  {
+    id: "ws_03",
+    name: "enterprise-co",
+    account: "Enterprise Co",
+    plan: "Enterprise",
+    seats: 184,
+    mau: 167,
+    createdAt: "2024-05-22",
+    status: "Active",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  {
+    id: "ws_04",
+    name: "startupio-main",
+    account: "StartupIO",
+    plan: "Growth",
+    seats: 28,
+    mau: 24,
+    createdAt: "2025-12-09",
+    status: "Trial",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  {
+    id: "ws_05",
+    name: "atlas-prod",
+    account: "Atlas Tech",
+    plan: "Growth",
+    seats: 71,
+    mau: 38,
+    createdAt: "2025-09-04",
+    status: "Active",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  {
+    id: "ws_06",
+    name: "tech-co-eu",
+    account: "Tech Co",
+    plan: "Growth",
+    seats: 44,
+    mau: 41,
+    createdAt: "2026-01-15",
+    status: "Active",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  {
+    id: "ws_07",
+    name: "fluxlabs-trial",
+    account: "FluxLabs",
+    plan: "Trial",
+    seats: 11,
+    mau: 6,
+    createdAt: "2026-04-19",
+    status: "Trial",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+  {
+    id: "ws_08",
+    name: "northstar-io",
+    account: "NorthStar IO",
+    plan: "Trial",
+    seats: 18,
+    mau: 9,
+    createdAt: "2026-04-22",
+    status: "Trial",
+    source: "snowflake",
+    sources: ["snowflake", "segment"],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Product usage (aggregated session activity)
+
+export type ProductUsageRow = {
+  id: string;
+  workspace: string;
+  account: string;
+  sessions7d: number;
+  topFeatures: string[];
+  trend: "up" | "flat" | "down";
+  trendPct: number; // % change vs prior 7d
+  lastActiveAt: string;
+  source: DataSourceKind;
+};
+
+export const PRODUCT_USAGE: ProductUsageRow[] = [
+  {
+    id: "use_01",
+    workspace: "bigcorp-prod",
+    account: "BigCorp",
+    sessions7d: 1840,
+    topFeatures: ["Router", "Audit Log", "Policy Sim"],
+    trend: "up",
+    trendPct: 14,
+    lastActiveAt: "4 min ago",
+    source: "snowflake",
+  },
+  {
+    id: "use_02",
+    workspace: "enterprise-co",
+    account: "Enterprise Co",
+    sessions7d: 1212,
+    topFeatures: ["Router", "Approvals"],
+    trend: "flat",
+    trendPct: 1,
+    lastActiveAt: "12 min ago",
+    source: "snowflake",
+  },
+  {
+    id: "use_03",
+    workspace: "atlas-prod",
+    account: "Atlas Tech",
+    sessions7d: 318,
+    topFeatures: ["Router"],
+    trend: "down",
+    trendPct: -28,
+    lastActiveAt: "2 hours ago",
+    source: "snowflake",
+  },
+  {
+    id: "use_04",
+    workspace: "startupio-main",
+    account: "StartupIO",
+    sessions7d: 487,
+    topFeatures: ["Router", "Policy Sim", "Approvals"],
+    trend: "up",
+    trendPct: 62,
+    lastActiveAt: "8 min ago",
+    source: "snowflake",
+  },
+  {
+    id: "use_05",
+    workspace: "tech-co-eu",
+    account: "Tech Co",
+    sessions7d: 392,
+    topFeatures: ["Router", "Audit Log"],
+    trend: "up",
+    trendPct: 9,
+    lastActiveAt: "27 min ago",
+    source: "snowflake",
+  },
+  {
+    id: "use_06",
+    workspace: "fluxlabs-trial",
+    account: "FluxLabs",
+    sessions7d: 41,
+    topFeatures: ["Router"],
+    trend: "up",
+    trendPct: 320,
+    lastActiveAt: "44 min ago",
+    source: "segment",
+  },
+  {
+    id: "use_07",
+    workspace: "northstar-io",
+    account: "NorthStar IO",
+    sessions7d: 98,
+    topFeatures: ["Router", "Audit Log"],
+    trend: "up",
+    trendPct: 110,
+    lastActiveAt: "16 min ago",
+    source: "segment",
+  },
+  {
+    id: "use_08",
+    workspace: "bigcorp-staging",
+    account: "BigCorp",
+    sessions7d: 22,
+    topFeatures: ["Policy Sim"],
+    trend: "down",
+    trendPct: -12,
+    lastActiveAt: "1 day ago",
+    source: "snowflake",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Consents (privacy / opt-out state)
+
+export type Consent = {
+  id: string;
+  person: string;
+  email: string;
+  region: "NA" | "EMEA" | "APAC" | "LATAM";
+  emailOptIn: boolean;
+  phoneOptIn: boolean;
+  smsOptIn: boolean;
+  dsrStatus: "—" | "Pending" | "In progress" | "Fulfilled";
+  source: DataSourceKind;
+  sources: DataSourceKind[];
+  updatedAt: string;
+};
+
+export const CONSENTS: Consent[] = [
+  {
+    id: "cons_01",
+    person: "Jane Doe",
+    email: "jane@bigcorp.com",
+    region: "NA",
+    emailOptIn: true,
+    phoneOptIn: true,
+    smsOptIn: false,
+    dsrStatus: "—",
+    source: "onetrust",
+    sources: ["onetrust", "marketo", "salesforce"],
+    updatedAt: "Today 9:14 AM",
+  },
+  {
+    id: "cons_02",
+    person: "Emma Walsh",
+    email: "emma@tech.co",
+    region: "EMEA",
+    emailOptIn: true,
+    phoneOptIn: false,
+    smsOptIn: false,
+    dsrStatus: "—",
+    source: "onetrust",
+    sources: ["onetrust", "hubspot", "marketo"],
+    updatedAt: "Yesterday 4:22 PM",
+  },
+  {
+    id: "cons_03",
+    person: "Yuki Tanaka",
+    email: "yuki@orbitalops.jp",
+    region: "APAC",
+    emailOptIn: true,
+    phoneOptIn: true,
+    smsOptIn: true,
+    dsrStatus: "—",
+    source: "onetrust",
+    sources: ["onetrust", "salesforce"],
+    updatedAt: "3 days ago",
+  },
+  {
+    id: "cons_04",
+    person: "Hannah Kim",
+    email: "hannah@civicstack.com",
+    region: "EMEA",
+    emailOptIn: false,
+    phoneOptIn: false,
+    smsOptIn: false,
+    dsrStatus: "Fulfilled",
+    source: "onetrust",
+    sources: ["onetrust", "marketo", "hubspot", "salesforce"],
+    updatedAt: "5 days ago",
+  },
+  {
+    id: "cons_05",
+    person: "Diego Alvarez",
+    email: "diego@fluxlabs.io",
+    region: "LATAM",
+    emailOptIn: true,
+    phoneOptIn: false,
+    smsOptIn: false,
+    dsrStatus: "In progress",
+    source: "onetrust",
+    sources: ["onetrust", "salesforce", "marketo"],
+    updatedAt: "Today 11:31 AM",
+  },
+  {
+    id: "cons_06",
+    person: "Rebecca Foster",
+    email: "rebecca@sablestack.com",
+    region: "NA",
+    emailOptIn: false,
+    phoneOptIn: false,
+    smsOptIn: false,
+    dsrStatus: "Pending",
+    source: "onetrust",
+    sources: ["onetrust", "hubspot"],
+    updatedAt: "1 hour ago",
+  },
+  {
+    id: "cons_07",
+    person: "Marcus Lee",
+    email: "marcus@brighttrail.io",
+    region: "NA",
+    emailOptIn: true,
+    phoneOptIn: false,
+    smsOptIn: false,
+    dsrStatus: "—",
+    source: "onetrust",
+    sources: ["onetrust", "hubspot", "salesforce"],
+    updatedAt: "Yesterday 1:08 PM",
+  },
+  {
+    id: "cons_08",
+    person: "Aiden Park",
+    email: "aiden@northstar.io",
+    region: "NA",
+    emailOptIn: true,
+    phoneOptIn: true,
+    smsOptIn: false,
+    dsrStatus: "—",
+    source: "onetrust",
+    sources: ["onetrust", "marketo", "salesforce", "hubspot"],
+    updatedAt: "2 days ago",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Intent signals
+
+export type IntentSignal = {
+  id: string;
+  account: string;
+  topic: string;
+  score: number;
+  surgeDelta: number; // % change vs trailing 30d
+  firstSeenAt: string;
+  source: DataSourceKind;
+  sources: DataSourceKind[];
+  triggeredAgents: string[];
+};
+
+export const INTENT_SIGNALS: IntentSignal[] = [
+  {
+    id: "int_01",
+    account: "BigCorp",
+    topic: "Lead routing software",
+    score: 94,
+    surgeDelta: 312,
+    firstSeenAt: "2 days ago",
+    source: "zoominfo",
+    sources: ["zoominfo", "snowflake", "segment"],
+    triggeredAgents: ["agt_11x_alice", "agt_zi_signals"],
+  },
+  {
+    id: "int_02",
+    account: "Atlas Tech",
+    topic: "Sales engagement platforms",
+    score: 81,
+    surgeDelta: 188,
+    firstSeenAt: "Today 9:42 AM",
+    source: "zoominfo",
+    sources: ["zoominfo", "hubspot"],
+    triggeredAgents: ["agt_zi_signals"],
+  },
+  {
+    id: "int_03",
+    account: "Enterprise Co",
+    topic: "Revenue attribution",
+    score: 76,
+    surgeDelta: 122,
+    firstSeenAt: "1 day ago",
+    source: "zoominfo",
+    sources: ["zoominfo", "snowflake"],
+    triggeredAgents: ["agt_11x_alice"],
+  },
+  {
+    id: "int_04",
+    account: "FluxLabs",
+    topic: "AI agents for sales",
+    score: 88,
+    surgeDelta: 240,
+    firstSeenAt: "Today 11:08 AM",
+    source: "segment",
+    sources: ["segment", "zoominfo"],
+    triggeredAgents: ["agt_warmly_visitor", "agt_11x_alice"],
+  },
+  {
+    id: "int_05",
+    account: "NorthStar IO",
+    topic: "Marketing automation",
+    score: 71,
+    surgeDelta: 95,
+    firstSeenAt: "3 days ago",
+    source: "zoominfo",
+    sources: ["zoominfo", "hubspot", "snowflake"],
+    triggeredAgents: ["agt_marketo_engage"],
+  },
+  {
+    id: "int_06",
+    account: "Orbital Ops",
+    topic: "GTM orchestration",
+    score: 84,
+    surgeDelta: 167,
+    firstSeenAt: "Today 8:15 AM",
+    source: "zoominfo",
+    sources: ["zoominfo", "snowflake", "segment", "hubspot"],
+    triggeredAgents: ["agt_artisan_ava", "agt_zi_signals"],
+  },
+  {
+    id: "int_07",
+    account: "Meridian Labs",
+    topic: "Demand generation",
+    score: 67,
+    surgeDelta: 58,
+    firstSeenAt: "4 days ago",
+    source: "zoominfo",
+    sources: ["zoominfo", "hubspot"],
+    triggeredAgents: ["agt_marketo_engage"],
+  },
+  {
+    id: "int_08",
+    account: "Tech Co",
+    topic: "CSM tooling",
+    score: 62,
+    surgeDelta: 41,
+    firstSeenAt: "6 days ago",
+    source: "snowflake",
+    sources: ["snowflake", "zoominfo"],
+    triggeredAgents: ["agt_gainsight_cs"],
+  },
+];
 
 // ---------------------------------------------------------------------------
 // Lookups
