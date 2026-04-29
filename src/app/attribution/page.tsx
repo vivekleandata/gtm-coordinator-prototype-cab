@@ -403,8 +403,8 @@ function AvoidedCostBlock() {
   return (
     <Card className="p-5">
       <Section
-        title="Pipeline protected by the Coordinator"
-        description="Decisions the agent stack would have made without preflight, blocked at the gate. Translated into dollars at the average $14K-per-Tier-1-touch cost of duplicate outreach."
+        title="Customer experience protected by the Coordinator"
+        description="Buyers we shielded from duplicate outreach, mistimed nurture, and conflicting agent messages. Every blocked collision is a buying journey we kept clean instead of burning out — translated into dollars at the average $14K cost of a degraded Tier‑1 touchpoint."
       >
         <div className="mt-2 grid grid-cols-1 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-4">
           <div className="rounded-md border border-border bg-ink-50/60 p-4">
@@ -428,16 +428,18 @@ function AvoidedCostBlock() {
               <span className="hero-serif text-[36px] leading-none font-semibold text-ink-900 tabular">
                 {formatDollars(a.pipelineProtectedK)}
               </span>
-              <span className="text-[13px] text-muted">pipeline protected</span>
+              <span className="text-[13px] text-muted">
+                buyer trust protected
+              </span>
               <span className="chip border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold tabular">
                 +{formatDollars(a.revenueProtectedK)} revenue at our win rate
               </span>
             </div>
             <p className="mt-3 text-[12px] text-muted leading-snug">
-              This is the number Finance asks for and the dashboard hasn&apos;t
-              had: the dollar value of the touches we prevented from happening.
-              It does not double-count attributed pipeline — it represents
-              accounts the stack would have burned out instead of advancing.
+              The number CX and Marketing have always wanted but never had: the
+              dollar value of the buyer experiences we didn&apos;t degrade. It
+              doesn&apos;t double-count attributed pipeline — it represents
+              customers the stack would have alienated instead of advancing.
             </p>
           </div>
 

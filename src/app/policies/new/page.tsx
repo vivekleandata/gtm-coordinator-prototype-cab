@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import { PolicyBuilder } from "@/components/policy-builder";
 
 export default function NewPolicyPage() {
-  return <PolicyBuilder mode="new" />;
+  return (
+    <Suspense fallback={null}>
+      <PolicyBuilder mode="new" />
+    </Suspense>
+  );
 }

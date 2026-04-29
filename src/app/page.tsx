@@ -6,7 +6,6 @@ import {
   Activity,
   ArrowRight,
   Scroll,
-  CalendarCheck,
 } from "lucide-react";
 import { PageHeader, Section } from "@/components/ui/page-header";
 import {
@@ -115,10 +114,10 @@ export default function CommandCenter() {
         <Card className="p-5">
           <Section
             title="Agent health"
-            description="12 agents across 7 vendors"
+            description={`${AGENTS.length} agents across ${new Set(AGENTS.map((a) => a.vendor)).size} vendors`}
             action={
               <Link
-                href="/agents"
+                href="/directory/agents"
                 className="text-[11.5px] text-brand-700 hover:underline font-medium inline-flex items-center gap-1"
               >
                 All agents <ArrowRight className="w-3 h-3" />
@@ -300,12 +299,6 @@ export default function CommandCenter() {
               className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800"
             >
               <Activity className="w-3.5 h-3.5 text-brand" /> Attribution
-            </Link>
-            <Link
-              href="/scheduling"
-              className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800"
-            >
-              <CalendarCheck className="w-3.5 h-3.5 text-brand" /> Scheduling
             </Link>
           </div>
         </div>

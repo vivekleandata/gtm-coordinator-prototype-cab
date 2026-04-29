@@ -25,17 +25,18 @@ decision lands in an immutable Action Ledger.
 - framer-motion, lucide-react
 - No backend. All data is in `src/lib/fixtures.ts`.
 
-## Routes (~13)
+## Routes
 
 - `/` — Command Center (hero KPIs, live decision feed, agent health, contested records, collisions)
-- `/preflight` — Preflight API stream + request/response reference
+- `/preflight` — Preflight stream (decisions feed + KPIs)
 - `/collisions` — Collision log + resolution logic
 - `/agents`, `/agents/[id]` — registered agents with declared actions
-- `/records`, `/records/[id]` — canonical records with cross-agent timeline
+- `/records` — canonical records index
+- `/records/contacts`, `/records/accounts`, `/records/opportunities` — by-object views
+- `/records/custom/quotes`, `/records/custom/orders` — custom-object views
+- `/records/[id]` — canonical record detail with cross-agent timeline
 - `/ledger` — immutable action ledger with filters
-- `/policies` — deterministic policy engine + dry-run simulation
-- `/budgets` — communication budgets per tier + channel caps
-- `/scheduling` — agent-booked meetings with pool health
+- `/policies` — unified policy engine: identity, communication budgets, sequencing, stage gates, approvals, compliance — all in one tab strip with dry-run simulation. Communication budgets live as `category: "communication-budgets"` policy entries (formerly the standalone `/budgets` page). Deep link: `/policies?category=communication-budgets`.
 - `/attribution` — outcome attribution per agent (pipeline, revenue, cycle)
 - `/partners` — partner ecosystem grid + webhook deliveries
 - `/mcp` — MCP tools + REST/SDK code snippets

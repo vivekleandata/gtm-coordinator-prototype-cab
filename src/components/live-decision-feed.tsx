@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AGENTS_BY_ID, RECORDS_BY_ID, getDecisions } from "@/lib/fixtures";
 import type { PreflightEntry } from "@/lib/fixtures";
 import { DecisionBadge, ToolIcon } from "@/components/ui/primitives";
@@ -57,16 +57,6 @@ export function LiveDecisionFeed({
 function FeedRow({ entry }: { entry: PreflightEntry }) {
   const agent = AGENTS_BY_ID[entry.agentId];
   const record = RECORDS_BY_ID[entry.recordId];
-  const [isNew, setIsNew] = useState(false);
-  const prev = useRef(entry.tsMs);
-  useEffect(() => {
-    if (prev.current !== entry.tsMs) {
-      setIsNew(true);
-      const id = setTimeout(() => setIsNew(false), 600);
-      prev.current = entry.tsMs;
-      return () => clearTimeout(id);
-    }
-  }, [entry.tsMs]);
 
   return (
     <li className="px-4 py-2.5 flex items-center gap-3 hover:bg-ink-50/50 transition-colors">
@@ -97,9 +87,6 @@ function FeedRow({ entry }: { entry: PreflightEntry }) {
       <div className="w-14 shrink-0 text-[11px] text-muted tabular text-right">
         {entry.latencyMs} ms
       </div>
-      {isNew && (
-        <span className="absolute w-1 h-full bg-brand/40 left-0 top-0 animate-fade-in" />
-      )}
     </li>
   );
 }

@@ -9,7 +9,12 @@ import {
   StatusChip,
   ToolIcon,
 } from "@/components/ui/primitives";
-import { AGENTS_BY_ID, RECORDS_BY_ID, getDecisions } from "@/lib/fixtures";
+import {
+  AGENTS_BY_ID,
+  AGENT_KIND_LABELS,
+  RECORDS_BY_ID,
+  getDecisions,
+} from "@/lib/fixtures";
 import { formatNumber, formatRelative, pct } from "@/lib/utils";
 
 export default async function AgentDetail({
@@ -26,19 +31,19 @@ export default async function AgentDetail({
   return (
     <div className="px-8 py-8 max-w-[1400px] mx-auto space-y-7">
       <Link
-        href="/agents"
+        href="/directory/agents"
         className="inline-flex items-center gap-1.5 text-[12.5px] text-muted hover:text-ink-900"
       >
-        <ArrowLeft className="w-3.5 h-3.5" /> Agents
+        <ArrowLeft className="w-3.5 h-3.5" /> Directory · Agents
       </Link>
 
       <div className="flex items-start gap-4">
         <ToolIcon color={agent.color} initials={agent.initials} size={48} />
         <div className="flex-1">
           <PageHeader
-            eyebrow={`${agent.vendor} · ${agent.kind}`}
+            eyebrow={`${agent.vendor} · ${AGENT_KIND_LABELS[agent.kind]}`}
             title={agent.name}
-            description={`Registered ${agent.registeredAt} · API key ${agent.apiKeyPreview}`}
+            meta={`Registered ${agent.registeredAt} · API key ${agent.apiKeyPreview}`}
             actions={
               <>
                 <button className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-border bg-surface hover:bg-ink-50 text-[12.5px] font-medium text-ink-800">
