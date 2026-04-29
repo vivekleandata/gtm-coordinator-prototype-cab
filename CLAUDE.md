@@ -4,7 +4,7 @@
 
 
 Visual prototype for the **GTM Agent Coordinator** — LeanData's control plane for
-third-party AI agents (11x, Warmly, Clay, OneMind, ZoomInfo, Regie.ai, Qualified,
+third-party AI agents (11x, Warmly, Clay, 1Mind, ZoomInfo, Regie.ai, Qualified,
 plus in-house agents) operating across a customer's GTM stack.
 
 Shown alongside `products/agentic-gtm-platform/prototypes/agp-app-v7` at the

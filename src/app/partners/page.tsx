@@ -88,7 +88,7 @@ export default function PartnersPage() {
               {
                 t: "38 min ago",
                 event: "meeting.booked",
-                partner: "OneMind",
+                partner: "1Mind",
                 status: "200",
                 tone: "green",
               },
