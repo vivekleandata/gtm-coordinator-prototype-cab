@@ -84,6 +84,7 @@ Project-scoped command definitions live in `.claude/commands/save-session.md` an
 
 ## Stable snapshots
 
+- **CAB v1.2** — git tag `cab-v1.2` (commit `d22d929`). Locks the live-feed box dimensions, adds period chiclets to every StatCard, turns `/preflight` into a live-streaming feed (every 2.5s), and rebrands 1Mind from Scheduler to BDR (kind `ai-sdr`, "Agentic outreach"). Live URL: [gtm-coordinator-cab-v1-2.vercel.app](https://gtm-coordinator-cab-v1-2.vercel.app). GitHub release: [cab-v1.2](https://github.com/vivekleandata/gtm-coordinator-prototype-cab/releases/tag/cab-v1.2).
 - **CAB v1.1** — git tag `cab-v1.1` (commit `ee9bd9c`). Adds live-streaming hero feed with arrival animations and trims it to 5 rows so contested records + collisions sit closer to the fold. Live URL: [gtm-coordinator-cab-v1-1.vercel.app](https://gtm-coordinator-cab-v1-1.vercel.app). GitHub release: [cab-v1.1](https://github.com/vivekleandata/gtm-coordinator-prototype-cab/releases/tag/cab-v1.1).
 - **CAB v1.0** — git tag `cab-v1.0` (commit `1758e7b`). Frozen at the customer-conference build: 21 agents, 15 record sets with multi-source identity chips, 1Mind branding. Live URL: [gtm-coordinator-cab-v1-0.vercel.app](https://gtm-coordinator-cab-v1-0.vercel.app). GitHub release: [cab-v1.0](https://github.com/vivekleandata/gtm-coordinator-prototype-cab/releases/tag/cab-v1.0).
 
