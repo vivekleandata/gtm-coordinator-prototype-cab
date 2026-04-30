@@ -86,12 +86,14 @@ export function StatCard({
   sublabel,
   tone,
   icon,
+  period,
 }: {
   label: string;
   value: string;
   sublabel?: React.ReactNode;
   tone?: "green" | "amber" | "red" | "brand";
   icon?: React.ReactNode;
+  period?: string;
 }) {
   const toneBorder = tone
     ? {
@@ -113,7 +115,16 @@ export function StatCard({
         <div className="text-[11.5px] text-muted font-medium uppercase tracking-wide">
           {label}
         </div>
-        {icon && <div className="text-ink-400">{icon}</div>}
+        {(period || icon) && (
+          <div className="flex items-center gap-1.5 shrink-0">
+            {period && (
+              <span className="px-1.5 py-0.5 rounded-md bg-ink-50 text-ink-600 text-[10px] font-semibold tabular leading-none uppercase tracking-wide">
+                {period}
+              </span>
+            )}
+            {icon && <div className="text-ink-400">{icon}</div>}
+          </div>
+        )}
       </div>
       <div className="mt-1.5 text-[26px] font-semibold tracking-tight text-ink-900 display">
         {value}

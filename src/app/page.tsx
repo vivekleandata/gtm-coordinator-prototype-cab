@@ -59,11 +59,12 @@ export default function CommandCenter() {
       {/* Stat row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard
-          label="Preflights · 24h"
+          label="Preflights"
           value={formatNumber(OVERVIEW_KPIS.preflights24h)}
           sublabel={`↑ 12.3% vs yesterday · p95 ${OVERVIEW_KPIS.p95LatencyMs} ms`}
           tone="brand"
           icon={<Zap className="w-4 h-4" />}
+          period="24h"
         />
         <StatCard
           label="GO rate"
@@ -71,6 +72,7 @@ export default function CommandCenter() {
           sublabel={`${formatNumber(OVERVIEW_KPIS.goCount)} authorized actions`}
           tone="green"
           icon={<Activity className="w-4 h-4" />}
+          period="24h"
         />
         <StatCard
           label="Collisions prevented"
@@ -78,6 +80,7 @@ export default function CommandCenter() {
           sublabel={`${pct(OVERVIEW_KPIS.collisionRate)} of traffic · resolved in ≤10 ms`}
           tone="amber"
           icon={<ShieldCheck className="w-4 h-4" />}
+          period="24h"
         />
         <StatCard
           label="Active agents"
@@ -85,6 +88,7 @@ export default function CommandCenter() {
           sublabel={`${OVERVIEW_KPIS.pausedAgents} paused · 1 throttled`}
           tone="brand"
           icon={<Bot className="w-4 h-4" />}
+          period="now"
         />
       </div>
 

@@ -16,11 +16,12 @@ export default function PreflightPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard
-          label="Requests · last 24h"
+          label="Requests"
           value={formatNumber(OVERVIEW_KPIS.preflights24h)}
           sublabel="9 vendor agents + 3 in-house"
           tone="brand"
           icon={<Zap className="w-4 h-4" />}
+          period="24h"
         />
         <StatCard
           label="p95 latency"
@@ -28,6 +29,7 @@ export default function PreflightPage() {
           sublabel={`SLA ${OVERVIEW_KPIS.sla}`}
           tone="green"
           icon={<Gauge className="w-4 h-4" />}
+          period="15m"
         />
         <StatCard
           label="GO rate"
@@ -35,18 +37,25 @@ export default function PreflightPage() {
           sublabel="Remaining: 10% NO_GO · 3% WAIT · 2% REDIRECT"
           tone="brand"
           icon={<ShieldCheck className="w-4 h-4" />}
+          period="24h"
         />
         <StatCard
-          label="Uptime · 30d"
+          label="Uptime"
           value={OVERVIEW_KPIS.uptime30d}
           sublabel="Fail-open degrade: 0 incidents"
           tone="green"
           icon={<Clock className="w-4 h-4" />}
+          period="30d"
         />
       </div>
 
       {/* Live feed */}
-      <LiveDecisionFeed showFooter={false} />
+      <LiveDecisionFeed
+        showFooter={false}
+        limit={12}
+        liveStream
+        streamIntervalMs={2500}
+      />
     </div>
   );
 }
