@@ -8,6 +8,8 @@ import { DecisionBadge, ToolIcon } from "@/components/ui/primitives";
 import { cn, formatRelative } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
+const ROW_HEIGHT_PX = 44;
+
 export function LiveDecisionFeed({
   limit,
   showFooter = true,
@@ -53,6 +55,11 @@ export function LiveDecisionFeed({
     return () => clearInterval(id);
   }, [liveStream, limit, pool, streamIntervalMs]);
 
+  // Lock the box height when limit is set so streaming arrivals never resize
+  // the card (and never push the layout below). Wrapper clips off-screen rows
+  // during enter/exit translations.
+  const lockedHeight = limit ? limit * ROW_HEIGHT_PX : undefined;
+
   return (
     <div className="product-card overflow-hidden">
       <div className="h-11 px-4 flex items-center justify-between border-b border-border">
@@ -71,28 +78,33 @@ export function LiveDecisionFeed({
           </button>
         )}
       </div>
-      <ul className="divide-y divide-border">
-        <AnimatePresence initial={false}>
-          {entries.map((e) => (
-            <motion.li
-              key={e.id}
-              layout
-              initial={{ opacity: 0, y: -18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, height: 0, paddingTop: 0, paddingBottom: 0 }}
-              transition={{
-                layout: { duration: 0.35, ease: "easeOut" },
-                opacity: { duration: 0.25 },
-                y: { duration: 0.3, ease: "easeOut" },
-                height: { duration: 0.25 },
-              }}
-              className="overflow-hidden"
-            >
-              <FeedRow entry={e} />
-            </motion.li>
-          ))}
-        </AnimatePresence>
-      </ul>
+      <div
+        className="relative overflow-hidden"
+        style={lockedHeight ? { height: lockedHeight } : undefined}
+      >
+        <ul className="divide-y divide-border">
+          <AnimatePresence initial={false}>
+            {entries.map((e) => (
+              <motion.li
+                key={e.id}
+                layout
+                initial={{ opacity: 0, y: -ROW_HEIGHT_PX }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: ROW_HEIGHT_PX }}
+                transition={{
+                  layout: { duration: 0.35, ease: "easeOut" },
+                  opacity: { duration: 0.25 },
+                  y: { duration: 0.3, ease: "easeOut" },
+                }}
+                style={{ height: ROW_HEIGHT_PX }}
+                className="overflow-hidden"
+              >
+                <FeedRow entry={e} />
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </ul>
+      </div>
     </div>
   );
 }
@@ -105,7 +117,7 @@ function FeedRow({ entry }: { entry: PreflightEntry }) {
   return (
     <div
       className={cn(
-        "px-4 py-2.5 flex items-center gap-3 transition-colors duration-700",
+        "h-full px-4 flex items-center gap-3 transition-colors duration-700",
         fresh ? "bg-brand-50/70" : "hover:bg-ink-50/50",
       )}
     >
